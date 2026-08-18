@@ -1,0 +1,69 @@
+name: Add extended Angel filters
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-more-filters.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch filters
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old_filters = '''var FILTERS = [
+  {id:"all",label:"כל המלאכים"},{id:"oct",label:"7.10 ומילואים"},{id:"nefesh",label:"מתמודדי נפש"},
+  {id:"fizi",label:"פציעה ושיקום"},{id:"ovdan",label:"אובדן ואבל"},{id:"pro",label:"אנשי מקצוע"}
+];'''
+
+          new_filters = '''var FILTERS = [
+  {id:"all",label:"כל המלאכים"},{id:"oct",label:"7.10 ומילואים"},{id:"ptsd",label:"פוסט טראומה"},
+  {id:"combat",label:"הלם קרב"},{id:"loneliness",label:"בדידות"},{id:"addiction",label:"התמכרות"},
+  {id:"sexual",label:"פגיעה מינית"},{id:"domestic",label:"אלימות בתוך המשפחה"},
+  {id:"nefesh",label:"מתמודדי נפש"},{id:"fizi",label:"פציעה ושיקום"},{id:"ovdan",label:"אובדן ואבל"},{id:"pro",label:"אנשי מקצוע"}
+];
+
+var TOPIC_FILTERS = {
+  ptsd:["טראומה","פוסט־טראומה"],
+  combat:["מילואים","טראומה","פוסט־טראומה"],
+  loneliness:["בדידות"],
+  addiction:["התמכרות","החלמה"],
+  sexual:["פגיעה מינית"],
+  domestic:["אלימות בתוך המשפחה","אלימות במשפחה"]
+};'''
+
+          if old_filters not in s:
+              raise SystemExit('FILTERS block not found')
+          s = s.replace(old_filters, new_filters, 1)
+
+          old_list = '''  var list = ANGELS.filter(function(p){ return S.filter==="all" || p.kind===S.filter; })
+    .sort(function(a,b){ return (b.online?1:0)-(a.online?1:0); });'''
+
+          new_list = '''  var list = ANGELS.filter(function(p){
+    if (S.filter==="all") return true;
+    if (p.kind===S.filter) return true;
+    var wanted = TOPIC_FILTERS[S.filter];
+    if (!wanted) return false;
+    return p.topics.some(function(topic){ return wanted.indexOf(topic)>-1; });
+  }).sort(function(a,b){ return (b.online?1:0)-(a.online?1:0); });'''
+
+          if old_list not in s:
+              raise SystemExit('homeScreen filter block not found')
+          s = s.replace(old_list, new_list, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add post trauma, combat stress and support filters"
+          git push
