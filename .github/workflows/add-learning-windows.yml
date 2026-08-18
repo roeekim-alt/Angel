@@ -1,0 +1,124 @@
+name: Add Angel learning windows
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-learning-windows.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add learning cards and popups
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          if 'function learnSection()' in s:
+              print('Learning windows already present')
+              raise SystemExit(0)
+
+          css = '''
+          /* learn cards */
+          .learn-section{margin:18px 0 8px}
+          .learn-title{font-size:20px;margin:0 0 4px}
+          .learn-grid{display:grid;gap:10px;margin-top:12px}
+          .learn-card{width:100%;text-align:right;padding:16px;border-radius:20px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;gap:12px}
+          .learn-card .learn-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none}
+          .learn-card b{display:block;font-size:15px;margin-bottom:2px}
+          .learn-card span{display:block}
+          .learn-body{line-height:1.72}
+          .learn-body h4{font-size:16px;margin:18px 0 6px}
+          .learn-body h4:first-child{margin-top:0}
+          .learn-body p{margin:0 0 10px}
+          .learn-body ul{margin:6px 0 0;padding-inline-start:20px}
+          .learn-body li{margin-bottom:7px}
+          .learn-quote{background:#FFF8E9;border:1px solid #F3DFAC;border-radius:16px;padding:14px;margin-top:14px;font-weight:600}
+          '''
+          anchor = '.disclaimer{font-size:12px;text-align:center;color:#8B94B8;margin:8px 0 24px;line-height:1.6}'
+          s = s.replace(anchor, css + '\n' + anchor)
+
+          learn_section = '''
+          function learnSection(){
+            var cards = [
+              {id:"addiction",icon:"spark",bg:"#FFF4E0",color:"var(--halo-deep)",title:"התמכרות",sub:"איך זה מתחיל, ואיך מזהים שכבר מגזימים"},
+              {id:"sharing",icon:"msg",bg:"#F2F0FF",color:"var(--lilac)",title:"קשה לי לשתף",sub:"ניכור, בדידות והאפשרות שמישהו באמת יבין"},
+              {id:"community",icon:"users",bg:"#E8F7F1",color:"var(--grass)",title:"חשיבות הקהילה",sub:"אתה לא לבד. ביחד אפשר לזוז קדימה"}
+            ];
+            return '<section class="learn-section">'+
+              '<h3 class="display learn-title">רגע להבין מה עובר עליי</h3>'+
+              '<p class="small muted" style="margin:0">שלושה דברים שכדאי לדבר עליהם, בלי שיפוט ובלי קלישאות.</p>'+
+              '<div class="learn-grid">'+cards.map(function(c){
+                return '<button class="learn-card soft" data-act="learn" data-id="'+c.id+'">'+
+                  '<span class="learn-ic" style="background:'+c.bg+';color:'+c.color+'">'+ic(c.icon,21)+'</span>'+
+                  '<span style="flex:1"><b>'+c.title+'</b><span class="small muted">'+c.sub+'</span></span>'+
+                  '<span class="muted" aria-hidden="true">‹</span></button>';
+              }).join('')+'</div></section>';
+          }
+          '''
+          s = s.replace('function homeScreen(){', learn_section + '\nfunction homeScreen(){')
+          s = s.replace('    list.map(angelCard).join("")+\n    \'<p class="disclaimer">', '    list.map(angelCard).join("")+\n    learnSection()+\n    \'<p class="disclaimer">')
+
+          s = s.replace('afterId:null, afterSent:false, available:true, tick:0, wait:0', 'afterId:null, afterSent:false, learnId:null, available:true, tick:0, wait:0')
+
+          sheet_learn = '''
+          function sheetLearn(){
+            var id = S.learnId;
+            if (id==="addiction") return '<h3 class="display">התמכרות — מתי זה כבר יותר מדי?</h3>'+
+              '<div class="learn-body small muted" style="margin-top:12px">'+
+              '<p>התמכרות לא תמיד מתחילה ברגע דרמטי. לפעמים היא מתחילה ממשהו שעוזר לכבות לחץ, בדידות, שעמום או כאב — ואז לאט לאט הופך למשהו שקשה לוותר עליו.</p>'+
+              '<h4 style="color:var(--ink)">איך זה יכול להתחיל?</h4>'+
+              '<p>כשחומר או התנהגות מתחילים להפוך לפתרון הקבוע שלנו לכל מצב: כדי להירדם, להירגע, להיות חברתיים, לא לחשוב או פשוט לעבור את היום.</p>'+
+              '<h4 style="color:var(--ink)">איך מזהים שאולי מגזימים?</h4>'+
+              '<ul><li>צריך יותר כדי להגיע לאותה תחושה.</li><li>מתכננים להפחית — ושוב חוזרים לאותה כמות.</li><li>זה מתחיל לפגוע בשינה, בעבודה, בכסף, ביחסים או בבריאות.</li><li>המחשבה על הדבר תופסת יותר ויותר מקום ביום.</li><li>מרגישים עצבנות, אי־שקט או קושי משמעותי כשאין אותו.</li></ul>'+
+              '<div class="learn-quote" style="color:var(--ink)">לשים לב למה שקורה זו לא חולשה. זאת התחלה של שליטה מחדש.</div></div>';
+
+            if (id==="sharing") return '<h3 class="display">כשקשה לשתף</h3>'+
+              '<div class="learn-body small muted" style="margin-top:12px">'+
+              '<p>ניכור הוא התחושה שאתה ליד אנשים — אבל לא באמת איתם. שאתה רואה את העולם מבחוץ, ואף אחד לא באמת יודע מה קורה אצלך בפנים.</p>'+
+              '<h4 style="color:var(--ink)">למה בדיכאון מרגישים כל כך לבד?</h4>'+
+              '<p>כשאנחנו בדיכאון או במצוקה, קל להרגיש שאף אחד לא יבין, שלא כדאי להכביד, או שאין טעם להסביר. לפעמים אנחנו גם נסגרים דווקא ברגע שבו אנחנו הכי זקוקים לקשר.</p>'+
+              '<h4 style="color:var(--ink)">אבל יש מי שמסוגל להזדהות</h4>'+
+              '<p>לפעמים האדם שהכי יכול להבין הוא דווקא מי שכבר היה במקום דומה. לא כדי לתת פתרונות, אלא כדי להגיד: אני מכיר את התחושה הזאת. אני נשאר כאן איתך.</p>'+
+              '<div class="learn-quote" style="color:var(--ink)">לא חייבים לספר הכול. לפעמים מספיק להתחיל במשפט אחד: “קשה לי עכשיו”.</div></div>';
+
+            return '<h3 class="display">חשיבות הקהילה</h3>'+
+              '<div class="learn-body small muted" style="margin-top:12px">'+
+              '<p>אנחנו לא אמורים לעבור הכול לבד. קהילה היא לא רק קבוצה של אנשים — היא הידיעה שיש מי שרואה אותך, מי שמקשיב לך, ומי שמוכן להישאר גם כשאין תשובה מהירה.</p>'+
+              '<h4 style="color:var(--ink)">כשמתאחדים, דברים מתחילים לזוז</h4>'+
+              '<p>אנשים שעברו כאב, החלמה, אובדן, חרדה, התמכרות או בדידות יכולים להפוך את הניסיון שלהם לכוח עבור מישהו אחר. כל שיחה כזאת מזכירה לנו שאנחנו לא לבד.</p>'+
+              '<div class="learn-quote" style="color:var(--ink)">מגיע לנו לחיות. מגיע לנו להגשים. מגיע לנו להרגיש שוב את האושר שכבר כמעט שכחנו איך הוא מרגיש. ואם נעשה את זה ביחד — נוכל לעשות דברים מדהימים.</div></div>';
+          }
+          '''
+          s = s.replace('function sheetAfter(){', sheet_learn + '\nfunction sheetAfter(){')
+          s = s.replace(': S.sheet==="after" ? sheetAfter() : "";', ': S.sheet==="after" ? sheetAfter()\n    : S.sheet==="learn" ? sheetLearn() : "";')
+          s = s.replace('else if (act==="close"){ S.sheet=null; S.afterId=null; S.afterSent=false; }', 'else if (act==="close"){ S.sheet=null; S.afterId=null; S.afterSent=false; S.learnId=null; }')
+          s = s.replace('else if (act==="hero"){ S.sheet="triage"; }', 'else if (act==="hero"){ S.sheet="triage"; }\n  else if (act==="learn"){ S.learnId=id; S.sheet="learn"; }')
+
+          p.write_text(s, encoding='utf-8')
+          print('Updated index.html')
+          PY
+      - name: Validate JavaScript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          m=re.search(r'<script>(.*)</script>',s,re.S)
+          Path('/tmp/angel.js').write_text(m.group(1),encoding='utf-8')
+          PY
+          node --check /tmp/angel.js
+      - name: Commit updated site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Add Angel learning windows"
+          git push
