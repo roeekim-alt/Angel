@@ -261,9 +261,20 @@ var ANGELS = [
 ];
 
 var FILTERS = [
-  {id:"all",label:"כל המלאכים"},{id:"oct",label:"7.10 ומילואים"},{id:"nefesh",label:"מתמודדי נפש"},
-  {id:"fizi",label:"פציעה ושיקום"},{id:"ovdan",label:"אובדן ואבל"},{id:"pro",label:"אנשי מקצוע"}
+  {id:"all",label:"כל המלאכים"},{id:"oct",label:"7.10 ומילואים"},{id:"ptsd",label:"פוסט טראומה"},
+  {id:"combat",label:"הלם קרב"},{id:"loneliness",label:"בדידות"},{id:"addiction",label:"התמכרות"},
+  {id:"sexual",label:"פגיעה מינית"},{id:"domestic",label:"אלטמות בתוך המשפחה"},
+  {id:"nefesh",label:"מתמודדי נפש"},{id:"fizi",label:"פציעה ושיקום"},{id:"ovdan",label:"אובדן ואבל"},{id:"pro",label:"אנשי מקצוע"}
 ];
+
+var TOPIC_FILTERS = {
+  ptsd:["טראומה","פוסט־טראומה"],
+  combat:["מילואים","טראומה","פוסט־טראומה"],
+  loneliness:["בדידות"],
+  addiction:["התמכרות","החלמה"],
+  sexual:["פגיעה מינית"],
+  domestic:["אלימות בתוך המשפחה","אלטמות במשפחה"]
+};
 
 var TICKER = [
   "מלאך מספר 12 שם קומקום. יש זמן לדבר.",
@@ -371,8 +382,13 @@ function learnSection(){
 }
 
 function homeScreen(){
-  var list = ANGELS.filter(function(p){ return S.filter==="all" || p.kind===S.filter; })
-    .sort(function(a,b){ return (b.online?1:0)-(a.online?1:0); });
+  var list = ANGELS.filter(function(p){
+    if (S.filter==="all") return true;
+    if (p.kind===S.filter) return true;
+    var wanted = TOPIC_FILTERS[S.filter];
+    if (!wanted) return false;
+    return p.topics.some(function(topic){ return wanted.indexOf(topic)>-1; });
+  }).sort(function(a,b){ return (b.online?1:0)-(a.online?1:0); });
   var f = FILTERS.map(function(x){
     return '<button data-act="filter" data-id="'+x.id+'" aria-pressed="'+(S.filter===x.id)+'">'+x.label+'</button>';
   }).join("");
