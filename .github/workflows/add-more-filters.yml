@@ -1,4 +1,4 @@
-name: Add extended Angel filters
+name: Fix Angel filter typo
 
 on:
   push:
@@ -13,12 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch filters
+      - name: Fix typo
         run: |
-          echo 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCnA9UGF0aCgiaW5kZXguaHRtbCIpCnM9cC5yZWFkX3RleHQoZW5jb2Rpbmc9InV0Zi04IikKb2xkPSd2YXIgRklMVEVSUyA9IFtcbiAge2lkOiJhbGwiLGxhYmVsOiLXm9ecINeU157XnNeQ15vXmdedIn0se2lkOiJvY3QiLGxhYmVsOiI3LjEwINeV157Xmdec15XXkNeZ150ifSx7aWQ6Im5lZmVzaCIsbGFiZWw6Itee16rXnteV15PXk9eZINeg16TXqSJ9LFxuICB7aWQ6ImZpemkiLGxhYmVsOiLXpNem15nXoteUINeV16nXmden15XXnSJ9LHtpZDoib3ZkYW4iLGxhYmVsOiLXkNeV15HXk9efINeV15DXkdecIn0se2lkOiJwcm8iLGxhYmVsOiLXkNeg16nXmSDXnten16bXldeiIn1cbl07JwpuZXc9J3ZhciBGSUxURVJTID0gW1xuICB7aWQ6ImFsbCIsbGFiZWw6Iteb15wg15TXntec15DXm9eZ150ifSx7aWQ6Im9jdCIsbGFiZWw6IjcuMTAg15XXnteZ15zXldeQ15nXnSJ9LHtpZDoicHRzZCIsbGFiZWw6Itek15XXodeYINeY16jXkNeV157XlCJ9LFxuICB7aWQ6ImNvbWJhdCIsbGFiZWw6IteU15zXnSDXp9eo15EifSx7aWQ6ImxvbmVsaW5lc3MiLGxhYmVsOiLXkdeT15nXk9eV16oifSx7aWQ6ImFkZGljdGlvbiIsbGFiZWw6IteU16rXnteb16jXldeqIn0sXG4gIHtpZDoic2V4dWFsIixsYWJlbDoi16TXkteZ16LXlCDXnteZ16DXmdeqIn0se2lkOiJkb21lc3RpYyIsbGFiZWw6IteQ15zXmNee15XXqiDXkdeq15XXmiDXlNee16nXpNeX15QifSxcbiAge2lkOiJuZWZlc2giLGxhYmVsOiLXnteq157XldeT15PXmSDXoNek16kifSx7aWQ6ImZpemkiLGxhYmVsOiLXpNem15nXoteUINeV16nXmden15XXnSJ9LHtpZDoib3ZkYW4iLGxhYmVsOiLXkNeV15HXk9efINeV15DXkdecIn0se2lkOiJwcm8iLGxhYmVsOiLXkNeg16nXmSDXnten16bXldeiIn1cbl07XG5cbnZhciBUT1BJQ19GSUxURVJTID0ge1xuICBwdHNkOlsi15jXqNeQ15XXnteUIiwi16TXldeh15jWvteY16jXkNeV157XlCJdLFxuICBjb21iYXQ6WyLXnteZ15zXldeQ15nXnSIsIteY16jXkNeV157XlCIsItek15XXodeY1r7XmNeo15DXldee15QiXSxcbiAgbG9uZWxpbmVzczpbIteR15PXmdeT15XXqiJdLFxuICBhZGRpY3Rpb246WyLXlNeq157Xm9eo15XXqiIsIteU15fXnNee15QiXSxcbiAgc2V4dWFsOlsi16TXkteZ16LXlCDXnteZ16DXmdeqIl0sXG4gIGRvbWVzdGljOlsi15DXnNeZ157XldeqINeR16rXldeaINeU157Xqdek15fXlCIsIteQ15zXmNee15XXqiDXkdee16nXpNeX15QiXVxufTsnCmFzc2VydCBvbGQgaW4gcwpzPXMucmVwbGFjZShvbGQsbmV3LDEpCm9sZDI9JyAgdmFyIGxpc3QgPSBBTkdFTFMuZmlsdGVyKGZ1bmN0aW9uKHApeyByZXR1cm4gUy5maWx0ZXI9PT0iYWxsIiB8fCBwLmtpbmQ9PT1TLmZpbHRlcjsgfSlcbiAgICAuc29ydChmdW5jdGlvbihhLGIpeyByZXR1cm4gKGIub25saW5lPzE6MCktKGEub25saW5lPzE6MCk7IH0pOycKbmV3Mj0nICB2YXIgbGlzdCA9IEFOR0VMUy5maWx0ZXIoZnVuY3Rpb24ocCl7XG4gICAgaWYgKFMuZmlsdGVyPT09ImFsbCIpIHJldHVybiB0cnVlO1xuICAgIGlmIChwLmtpbmQ9PT1TLmZpbHRlcikgcmV0dXJuIHRydWU7XG4gICAgdmFyIHdhbnRlZCA9IFRPUElDX0ZJTFRFUlNbUy5maWx0ZXJdO1xuICAgIGlmICghd2FudGVkKSByZXR1cm4gZmFsc2U7XG4gICAgcmV0dXJuIHAudG9waWNzLnNvbWUoZnVuY3Rpb24odG9waWMpeyByZXR1cm4gd2FudGVkLmluZGV4T2YodG9waWMpPi0xOyB9KTtcbiAgfSkuc29ydChmdW5jdGlvbihhLGIpeyByZXR1cm4gKGIub25saW5lPzE6MCktKGEub25saW5lPzE6MCk7IH0pOycKYXNzZXJ0IG9sZDIgaW4gcwpzPXMucmVwbGFjZShvbGQyLG5ldzIsMSkKcC53cml0ZV90ZXh0KHMsZW5jb2Rpbmc9InV0Zi04IikK' | base64 -d > /tmp/patch.py
-          python /tmp/patch.py
+          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8').replace('אלטמות','אלימות'); p.write_text(s,encoding='utf-8')"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Add post trauma, combat stress and support filters"
+          git commit -m "Fix domestic violence filter typo"
           git push
