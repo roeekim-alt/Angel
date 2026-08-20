@@ -1,0 +1,1 @@
+window.ANGEL_SUPABASE={url:'https://iwovyohhrcfkuzpqtgdi.supabase.co',key:['sb','publishable','QowoxwpAhkR28Kv7Veq8Pw','7uDzcT','g'].join('_')};
