@@ -1,0 +1,39 @@
+name: Build standalone Angel backup
+on:
+  push:
+    paths:
+      - '.github/workflows/build-standalone-backup.yml'
+permissions:
+  contents: write
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build one-file HTML backup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s = Path('app.html').read_text(encoding='utf-8')
+          config = Path('supabase-config.js').read_text(encoding='utf-8')
+          backend = Path('supabase-backend.js').read_text(encoding='utf-8')
+          social = Path('social-v2.js').read_text(encoding='utf-8')
+          # Remove local Angel runtime script tags in any versioned/unversioned form.
+          patterns = [
+              r'<script\s+src="supabase-config\.js[^\"]*"\s*></script>',
+              r'<script\s+src="supabase-backend\.js[^\"]*"\s*></script>',
+              r'<script\s+src="social-v2\.js[^\"]*"\s*></script>',
+          ]
+          for p in patterns:
+              s = re.sub(p, '', s)
+          # Keep the official Supabase CDN dependency external; inline all Angel-owned code.
+          inline = '\n<!-- ANGEL STANDALONE BACKUP 2026-08-20 -->\n<script>\n' + config + '\n</script>\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n<script>\n' + backend + '\n</script>\n<script>\n' + social + '\n</script>\n'
+          s = s.replace('</body>', inline + '</body>')
+          Path('Angel-backup-2026-08-20.html').write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Angel-backup-2026-08-20.html
+          git commit -m "Create standalone Angel HTML backup" || exit 0
+          git push
