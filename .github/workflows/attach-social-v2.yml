@@ -1,0 +1,26 @@
+name: Attach Angel social v2
+on:
+  push:
+    paths:
+      - '.github/workflows/attach-social-v2.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace social layer
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('<script src="social.js"></script>','<script src="social-v2.js"></script>')
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add app.html
+          git commit -m "Switch Angel to persistent social v2" || exit 0
+          git push
