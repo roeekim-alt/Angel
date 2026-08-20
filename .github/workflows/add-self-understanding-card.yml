@@ -1,0 +1,39 @@
+name: Add self-understanding card
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-self-understanding-card.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch app.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.html')
+          s=p.read_text(encoding='utf-8')
+
+          old_cards='''    {id:"community",icon:"users",bg:"#E8F7F1",color:"var(--grass)",title:"חשיבות הקהילה",sub:"אתה לא לבד. ביחד אפשר לזוז קדימה"}\n  ];'''
+          new_cards='''    {id:"community",icon:"users",bg:"#E8F7F1",color:"var(--grass)",title:"חשיבות הקהילה",sub:"אתה לא לבד. ביחד אפשר לזוז קדימה"},\n    {id:"selfworth",icon:"heart",bg:"#FFF0F2",color:"var(--rose)",title:"למה כולם מסתדרים ורק אני לא?",sub:"למה אני כל כך לא מובן — ניתוח מעמיק"}\n  ];'''
+          assert old_cards in s, 'cards anchor not found'
+          s=s.replace(old_cards,new_cards,1)
+          s=s.replace('שלושה דברים שכדאי לדבר עליהם, בלי שיפוט ובלי קלישאות.','ארבעה דברים שכדאי לדבר עליהם, בלי שיפוט ובלי קלישאות.',1)
+
+          anchor='''  return '<h3 class="display">חשיבות הקהילה</h3>'+'''
+          block='''  if (id==="selfworth") return '<h3 class="display">למה כולם מסתדרים ורק אני לא?</h3>'+\n    '<div class="learn-body small muted" style="margin-top:12px">'+\n    '<p>אחת התחושות הכואבות ביותר היא להסתכל סביב ולחשוב שלכולם יש מפה ורק לך אין. אחרים נראים כאילו הם יודעים איך לעבוד, לאהוב, להתחבר, להתקדם ולהחזיק את עצמם — ואתה מרגיש תקוע, לא מובן, או תמיד צעד מאחור.</p>'+\n    '<h4 style="color:var(--ink)">למה זה מרגיש כאילו כולם מסתדרים?</h4>'+\n    '<p>אנחנו רואים אצל אחרים בעיקר את התוצאה החיצונית, אבל חיים מבפנים את כל הספקות שלנו. אנחנו רואים זוגיות, עבודה, חברים וחיוכים — ולא את החרדה בלילה, הריבים, החובות, תחושת הריקנות או הפחד שלהם. ההשוואה לכן כמעט תמיד לא הוגנת: החיים המלאים שלך מול חלון הראווה של מישהו אחר.</p>'+\n    '<h4 style="color:var(--ink)">למה אני מרגיש כל כך לא מובן?</h4>'+\n    '<p>כשיש בפנים עומס, בושה, חרדה, דיכאון או תחושת כישלון, לפעמים קשה אפילו להסביר מה קורה. ואז נוצר מעגל: אני לא מצליח להסביר → אחרים לא מבינים → אני נסגר יותר → הבדידות גדלה. זה לא בהכרח אומר שאין מי שיכול להבין אותך; לפעמים עוד לא נמצא האדם, המקום או המשפט שמאפשרים לך להתחיל להיפתח.</p>'+\n    '<h4 style="color:var(--ink)">כשאני הופך את עצמי לאויב שלי</h4>'+\n    '<p>ביקורת עצמית יכולה להישמע כמו ניסיון להשתפר, אבל כשהיא קבועה היא שוחקת. אם כל טעות הופכת ל“אני כישלון”, כל דחייה ל“אף אחד לא ירצה אותי”, וכל תקופה קשה ל“ככה יהיו החיים שלי תמיד” — המוח מתחיל להתייחס לפרשנות כאילו היא עובדה.</p>'+\n    '<h4 style="color:var(--ink)">ומה לגבי אהבה עצמית?</h4>'+\n    '<p>המשפט “אם לא אוהב את עצמי לא אוכל לאהוב אחרים” מבטא רעיון חשוב: היחס שלנו לעצמנו משפיע מאוד על הדרך שבה אנחנו נכנסים לקשר. כשאנחנו תלויים לחלוטין באישור מבחוץ כדי להרגיש בעלי ערך, כל ריחוק קטן עלול להרגיש כמו איום. אהבה עצמית לא אומרת לחשוב שאתה מושלם — אלא להיות מסוגל להישאר בצד שלך גם כשאתה מבולבל, נכשל או מפחד.</p>'+\n    '<div class="learn-quote" style="color:var(--ink)">אם לא אוהב את עצמי לא אוכל לאהוב אחרים.</div>'+\n    '<h4 style="color:var(--ink)">אז מה עושים עם התחושה הזאת?</h4>'+\n    '<p>לא צריך לפתור את כל החיים בבת אחת. אפשר להתחיל מלדבר עם אדם אחד בלי להציג גרסה “מסודרת” של עצמך. לשים לב מתי אתה משווה את מאחורי הקלעים שלך לבמה של אחרים. ולהחליף את השאלה “מה לא בסדר איתי?” בשאלה קצת יותר מועילה: “מה כואב לי, ומה אני צריך עכשיו?”</p>'+\n    '<div class="learn-quote" style="color:var(--ink)">אתה לא חייב להיות במקום שבו אחרים נמצאים. אתה צריך להתחיל מהמקום שבו אתה נמצא.</div></div>';\n\n'''
+          assert anchor in s, 'sheet anchor not found'
+          s=s.replace(anchor,block+anchor,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.html
+          git commit -m "Add deep self-understanding topic"
+          git push
