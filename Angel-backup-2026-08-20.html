@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>אנג'ל — המלאך השומר שלך</title>
+<meta name="description" content="קו הקשבה 24/7. אנשים שעברו את זה, זמינים לדבר איתך עכשיו." />
+<meta name="theme-color" content="#28315E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Suez+One&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------
+   אנג'ל — המלאך השומר שלך
+   Single-file prototype. No build tools, no frameworks.
+
+   HUMOR POLICY (deliberate, not decorative):
+   Humor lives in the ambient layer — hero, "where I am today" lines,
+   waiting states, empty states, the listener's own space.
+   Humor NEVER appears in: the crisis branch of triage, the emergency
+   sheet, or the in-call guidance. There the voice goes plain and steady.
+-------------------------------------------------------------------*/
+:root{
+  --bg:#EDF0FA; --surface:#fff; --ink:#1F2749; --ink-soft:#5A648C;
+  --line:#DDE2F2; --halo:#FFC24D; --halo-deep:#D98E0E;
+  --grass:#2FA37C; --rose:#EE6E8C; --lilac:#8E86E0; --blue:#4E8FE0;
+  --night:linear-gradient(170deg,#28315E,#4C4A90);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Assistant',system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.5;
+}
+.display{font-family:'Suez One','Assistant',serif;font-weight:400;letter-spacing:-.01em;margin:0}
+button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;touch-action:manipulation}
+a{text-decoration:none;color:inherit}
+:focus-visible{outline:3px solid var(--lilac);outline-offset:2px}
+svg{display:block;flex:none}
+
+.wrap{max-width:440px;margin:0 auto;padding:0 16px calc(112px + env(safe-area-inset-bottom))}
+.row{display:flex;align-items:center}
+.between{display:flex;align-items:center;justify-content:space-between}
+.press{transition:transform .14s ease}
+.press:active{transform:scale(.97)}
+.soft{transition:opacity .14s ease}
+.soft:active{opacity:.65}
+.muted{color:var(--ink-soft)}
+.small{font-size:14px}
+.xs{font-size:12px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;padding:20px 0 16px}
+.sos{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;
+  background:#FFE9EE;color:#BE3A5A;font-weight:600;font-size:13px}
+
+/* hero */
+.hero{border-radius:26px;padding:20px;color:#fff;background:var(--night)}
+.halos{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.halos i{width:18px;height:18px;border-radius:999px;border:2px solid rgba(255,255,255,.14)}
+.halos i.lit{border-color:var(--halo);animation:glow 3.6s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.5}50%{opacity:1}}
+.hero h2{font-size:27px;line-height:1.2;margin:4px 0 12px}
+.hero .count{color:var(--halo);font-size:14px;margin:0}
+#ticker{color:#B7BDE4;font-size:14px;min-height:42px;margin:0 0 16px;animation:fade .5s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.cta{width:100%;min-height:56px;border-radius:18px;background:var(--halo);color:#33270B;
+  font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px}
+.hero .note{text-align:center;font-size:12px;color:#A2AAD6;margin:8px 0 0}
+
+/* filters */
+.filters{display:flex;gap:8px;overflow-x:auto;padding:16px 16px;margin:0 -16px;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filters button{white-space:nowrap;min-height:40px;padding:0 16px;border-radius:999px;font-size:14px;
+  font-weight:600;background:var(--surface);color:var(--ink-soft);border:1px solid var(--line)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:12px}
+.card-head{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:right}
+.name{font-weight:700;font-size:16px}
+.been{font-size:14px;line-height:1.35;margin:2px 0 0}
+.where{font-size:14px;line-height:1.35;color:var(--ink-soft);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;
+  font-size:12px;font-weight:600;background:#F2F4FB;color:var(--ink-soft)}
+.actions{display:flex;gap:8px;margin-top:12px}
+.btn-dark{flex:1;min-height:46px;border-radius:14px;background:var(--ink);color:#fff;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-icon{width:52px;min-height:46px;border-radius:14px;background:#F2F4FB;display:grid;place-items:center}
+.btn-dark[disabled],.btn-icon[disabled]{background:#EFF1F8;color:#A0A8C4;cursor:default}
+
+/* avatar */
+.av{position:relative;flex:none}
+.av .face{width:100%;height:100%;display:grid;place-items:center;font-weight:700;border-radius:32%}
+.av .halo{position:absolute;border-radius:999px;border:2.5px solid var(--halo);transform:rotate(-8deg)}
+.av .dot{position:absolute;width:12px;height:12px;border-radius:999px;inset-inline-start:-2px;bottom:-2px;
+  border:2.5px solid var(--surface)}
+
+/* nav */
+nav{position:fixed;bottom:0;left:0;right:0;max-width:440px;margin:0 auto;background:var(--surface);
+  border-top:1px solid var(--line);display:flex;justify-content:space-around;
+  padding:8px 0 calc(14px + env(safe-area-inset-bottom));z-index:20}
+nav button{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:48px;padding:0 24px;
+  color:#98A1BE;font-size:12px;font-weight:600}
+nav button[aria-current="true"]{color:var(--ink)}
+
+/* sheet */
+.overlay{position:fixed;inset:0;background:rgba(24,29,55,.5);z-index:40}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:440px;margin:0 auto;z-index:41;
+  background:var(--surface);border-radius:28px 28px 0 0;padding:10px 20px calc(28px + env(safe-area-inset-bottom));
+  max-height:92vh;overflow-y:auto;animation:up .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.grab{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 16px}
+.sheet h3{font-size:20px;margin:0 0 4px}
+.opt{width:100%;text-align:right;padding:16px;margin-bottom:10px;border-radius:18px;
+  border:1px solid var(--line);background:#F8F9FE}
+.opt b{display:block}
+.box{background:#F8F9FE;border-radius:18px;padding:16px;margin-bottom:12px}
+.label{font-size:12px;font-weight:700;color:var(--ink-soft);margin:0 0 2px}
+.big{width:100%;min-height:54px;border-radius:16px;font-weight:700;font-size:16px;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.big.dark{background:var(--ink);color:#fff}
+.big.gold{background:var(--halo);color:#33270B}
+.big.red{background:#FFE9EE;color:#BE3A5A}
+.big[disabled]{background:#EFF1F8;color:#A0A8C4;cursor:default}
+.line-item{display:flex;align-items:center;justify-content:space-between;padding:16px;margin-bottom:10px;
+  border-radius:18px;border:1px solid var(--line);background:#F8F9FE}
+.num{font-weight:700;color:var(--rose);direction:ltr}
+
+/* full screens */
+.full{position:fixed;inset:0;z-index:50;background:var(--night);color:#fff;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:48px 24px calc(40px + env(safe-area-inset-bottom))}
+.pulse{position:relative;width:110px;height:110px;margin-bottom:32px}
+.pulse .ring{position:absolute;inset:0;border-radius:999px;border:2px solid var(--halo);
+  animation:ripple 1.8s ease-out infinite}
+.pulse .ring:nth-child(2){animation-delay:.9s}
+.pulse .core{position:absolute;inset:0;border-radius:999px;background:var(--halo);color:#33270B;
+  display:grid;place-items:center}
+@keyframes ripple{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.7);opacity:0}}
+.call-face{width:96px;height:96px;border-radius:32px;display:grid;place-items:center;font-size:40px;
+  font-weight:700;margin-bottom:20px;background:rgba(255,255,255,.18)}
+.guide{background:rgba(255,255,255,.08);border-radius:18px;padding:16px;text-align:right;margin-top:32px;width:100%}
+.call-btns{display:flex;align-items:center;justify-content:center;gap:16px}
+.circ{width:60px;height:60px;border-radius:999px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.circ.end{width:72px;height:72px;background:var(--rose)}
+.transfer{width:100%;min-height:48px;border-radius:14px;background:rgba(255,255,255,.12);color:#fff;
+  font-weight:600;font-size:14px;margin-bottom:12px}
+
+/* me */
+.toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px;
+  padding:0 16px;border-radius:18px;background:#F2F4FB;text-align:right}
+.toggle[aria-pressed="true"]{background:#FFF4E0}
+.switch{position:relative;width:52px;height:30px;border-radius:999px;background:#C7CDE2;flex:none;transition:background .2s}
+.switch b{position:absolute;width:24px;height:24px;border-radius:999px;background:#fff;top:3px;
+  inset-inline-start:3px;transition:inset-inline-start .2s}
+.toggle[aria-pressed="true"] .switch{background:var(--halo)}
+.toggle[aria-pressed="true"] .switch b{inset-inline-start:25px}
+.tile{width:100%;display:flex;align-items:center;gap:12px;padding:16px;margin-bottom:10px;text-align:right;
+  background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.tile .ic{width:42px;height:42px;border-radius:14px;background:#F2F4FB;display:grid;place-items:center;flex:none}
+
+
+/* learn cards */
+.learn-section{margin:18px 0 8px}
+.learn-title{font-size:20px;margin:0 0 4px}
+.learn-grid{display:grid;gap:10px;margin-top:12px}
+.learn-card{width:100%;text-align:right;padding:16px;border-radius:20px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;gap:12px}
+.learn-card .learn-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none}
+.learn-card b{display:block;font-size:15px;margin-bottom:2px}
+.learn-card span{display:block}
+.learn-body{line-height:1.72}
+.learn-body h4{font-size:16px;margin:18px 0 6px}
+.learn-body h4:first-child{margin-top:0}
+.learn-body p{margin:0 0 10px}
+.learn-body ul{margin:6px 0 0;padding-inline-start:20px}
+.learn-body li{margin-bottom:7px}
+.learn-quote{background:#FFF8E9;border:1px solid #F3DFAC;border-radius:16px;padding:14px;margin-top:14px;font-weight:600}
+
+.disclaimer{font-size:12px;text-align:center;color:#8B94B8;margin:8px 0 24px;line-height:1.6}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ----------------------------- icons ----------------------------- */
+var P = {
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  msg:'<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+  heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  mic:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>',
+  micOff:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="2" y1="2" x2="22" y2="22"/>',
+  home:'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  buoy:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  spark:'<path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
+  coffee:'<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>'
+};
+
+function ic(n, size, extra){
+  size = size || 20;
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" '+(extra||'')+'>'+P[n]+'</svg>';
+}
+
+/* ----------------------------- data ------------------------------ */
+var TAGS = {
+  nefesh:{label:"מתמודד/ת נפש", color:"var(--lilac)", raw:"#8E86E0"},
+  fizi:{label:"פציעה ושיקום", color:"var(--grass)", raw:"#2FA37C"},
+  oct:{label:"7.10 ומילואים", color:"var(--blue)", raw:"#4E8FE0"},
+  pro:{label:"איש/אשת מקצוע", color:"var(--halo-deep)", raw:"#D98E0E"},
+  ovdan:{label:"אובדן ואבל", color:"var(--rose)", raw:"#EE6E8C"}
+};
+
+/* been = plainly what they went through. where = today, and that is where the humor lives. */
+var ANGELS = [
+  {id:1,name:"דנה",age:34,ini:"ד",kind:"nefesh",online:true,fast:true,talks:128,langs:["עברית","אנגלית"],
+   been:"שמונה שנים של חרדה והתקפי פאניקה",
+   where:"מדריכת יוגה. מכירה כל תרגיל נשימה בעולם, כולל אלה שלא עובדים",
+   topics:["חרדה","פאניקה","בדידות"]},
+  {id:2,name:"רוני",age:27,ini:"ר",kind:"oct",online:true,fast:true,talks:47,langs:["עברית","אנגלית"],
+   been:"הייתי במסיבה ברעים ב-7 באוקטובר",
+   where:"חוזרת לרקוד. לאט, ובעיקר בסלון",
+   topics:["טראומה","שינה","אשמת ניצולים"]},
+  {id:3,name:"יואב",age:41,ini:"י",kind:"fizi",online:true,fast:false,talks:64,langs:["עברית"],
+   been:"פציעת עמוד שדרה בתאונת אופנוע",
+   where:"בשנה השנייה של השיקום. מתקדם לאט, אבל עם פלייליסט מצוין",
+   topics:["פציעה","שיקום","כאב כרוני"]},
+  {id:4,name:'ד"ר מיכל ל.',age:47,ini:"מ",kind:"pro",online:true,fast:true,talks:302,langs:["עברית","רוסית"],
+   been:"פסיכולוגית קלינית, 20 שנה בקליניקה",
+   where:"מתנדבת במשמרות ערב, בין כביסה לכביסה",
+   topics:["מצוקה חריפה","הכוונה לטיפול"]},
+  {id:5,name:"שגיא",age:31,ini:"ש",kind:"oct",online:true,fast:false,talks:73,langs:["עברית","אנגלית"],
+   been:"שלושה סבבי מילואים ופוסט־טראומה",
+   where:"אחרי טיפול. ישן עם רעש לבן ומאמן קבוצת כדורגל של בני 9",
+   topics:["מילואים","טראומה","חזרה לשגרה"]},
+  {id:6,name:"נור",age:29,ini:"נ",kind:"nefesh",online:true,fast:true,talks:51,langs:["ערבית","עברית"],
+   been:"דיכאון אחרי לידה",
+   where:"אמא לשניים, שורדת על קפה ואירוניה",
+   topics:["הורות","דיכאון","זוגיות"]},
+  {id:7,name:"אמיר",age:38,ini:"א",kind:"ovdan",online:true,fast:false,talks:89,langs:["עברית"],
+   been:"אובדן אח",
+   where:"שלוש שנים אחרי. מלווה קבוצת תמיכה ומכין שקשוקה ברמה מסוכנת",
+   topics:["אבל","אשמה","משפחה"]},
+  {id:8,name:"תמר",age:60,ini:"ת",kind:"nefesh",online:true,fast:true,talks:96,langs:["עברית"],
+   been:"גירושין ובדידות אחרי 30 שנות נישואין",
+   where:"לומדת צרפתית ומתווכחת עם המורה על ההגייה",
+   topics:["בדידות","התחלה מחדש"]},
+  {id:9,name:"ליאור",age:52,ini:"ל",kind:"nefesh",online:false,fast:false,talks:210,langs:["עברית"],
+   been:"שש שנים נקי מהתמכרות",
+   where:"חוזר ב-22:00. מומחה לקפה חזק ולפגישות בשבע בבוקר",
+   topics:["התמכרות","החלמה"]}
+];
+
+var FILTERS = [
+  {id:"all",label:"כל המלאכים"},{id:"oct",label:"7.10 ומילואים"},{id:"ptsd",label:"פוסט טראומה"},
+  {id:"combat",label:"הלם קרב"},{id:"loneliness",label:"בדידות"},{id:"addiction",label:"התמכרות"},
+  {id:"sexual",label:"פגיעה מינית"},{id:"domestic",label:"אלימות בתוך המשפחה"},
+  {id:"nefesh",label:"מתמודדי נפש"},{id:"fizi",label:"פציעה ושיקום"},{id:"ovdan",label:"אובדן ואבל"},{id:"pro",label:"אנשי מקצוע"}
+];
+
+var TOPIC_FILTERS = {
+  ptsd:["טראומה","פוסט־טראומה"],
+  combat:["מילואים","טראומה","פוסט־טראומה"],
+  loneliness:["בדידות"],
+  addiction:["התמכרות","החלמה"],
+  sexual:["פגיעה מינית"],
+  domestic:["אלימות בתוך המשפחה","אלימות במשפחה"]
+};
+
+var TICKER = [
+  "מלאך מספר 12 שם קומקום. יש זמן לדבר.",
+  'אף אחד כאן לא יגיד לך "תנסה לחשוב חיובי".',
+  "כנפיים אין לנו. סבלנות — בשפע.",
+  'אפשר גם רק להגיד "היי" ולשתוק ביחד.',
+  "שלושה מלאכים בדיוק לא מצליחים להירדם גם הם."
+];
+
+var WAIT = ["מעירים מלאך…","מחפשים מישהו שכבר היה בדיוק שם…","עוד רגע. הם בדרך, בלי טיסה ישירה."];
+
+var HOTLINES = [
+  {name:'ער"ן — עזרה ראשונה נפשית',detail:"24/7, אנונימי",num:"1201"},
+  {name:'מד"א',detail:"מצב מסכן חיים",num:"101"},
+  {name:"משטרה",detail:"סכנה מיידית",num:"100"},
+  {name:'נט"ל',detail:"טראומה על רקע לאומי ומלחמה",num:"1-800-363-363"},
+  {name:"מרכז חוסן ארצי",detail:"מענה טיפולי",num:"*5486"},
+  {name:'סה"ר',detail:"סיוע והקשבה בצ׳אט",num:"sahar.org.il"}
+];
+
+/* ----------------------------- state ----------------------------- */
+var S = {
+  tab:"home", filter:"all", sheet:null, profileId:null,
+  matching:null, callId:null, callStart:0, muted:false,
+  afterId:null, afterSent:false, learnId:null, available:true, tick:0, wait:0
+};
+var byId = function(id){ for (var i=0;i<ANGELS.length;i++) if (ANGELS[i].id===id) return ANGELS[i]; return null; };
+var esc = function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+
+/* --------------------------- components -------------------------- */
+function avatar(p, size){
+  size = size || 52;
+  var t = TAGS[p.kind];
+  var halo = p.online ? '<span class="halo" style="inset-inline-start:'+(size*0.16)+'px;top:'+(-size*0.13)+
+      'px;width:'+(size*0.68)+'px;height:'+(size*0.2)+'px"></span>' : '';
+  return '<span class="av" style="width:'+size+'px;height:'+size+'px">'+halo+
+    '<span class="face" style="font-size:'+(size*0.4)+'px;background:'+(p.online?t.raw+"1F":"#EBEEF7")+
+      ';color:'+(p.online?t.raw:"#98A1BE")+'">'+esc(p.ini)+'</span>'+
+    '<span class="dot" style="background:'+(p.online?"var(--grass)":"#B9C0D8")+'"></span></span>';
+}
+
+function chip(text, color, bg, icon){
+  return '<span class="chip"'+(color?' style="color:'+color+';background:'+bg+'"':'')+'>'+
+    (icon?ic(icon,12):'')+esc(text)+'</span>';
+}
+
+function angelCard(p){
+  var t = TAGS[p.kind];
+  return '<article class="card">'+
+    '<button class="card-head soft" data-act="open" data-id="'+p.id+'">'+
+      avatar(p)+
+      '<span style="flex:1;min-width:0">'+
+        '<span class="row" style="gap:6px;flex-wrap:wrap">'+
+          '<span class="name">'+esc(p.name)+'</span>'+
+          '<span class="small muted">· '+p.age+'</span>'+
+          '<span style="color:var(--grass)" title="עבר/ה מיון והכשרה">'+ic('shield',15)+'</span>'+
+        '</span>'+
+        '<span class="been" style="display:block">'+esc(p.been)+'</span>'+
+        '<span class="where" style="display:block">'+esc(p.where)+'</span>'+
+        '<span class="chips">'+
+          chip(t.label, t.raw, t.raw+"18")+
+          (p.fast&&p.online?chip("עונה מיד","var(--halo-deep)","#FFF4E0","spark"):"")+
+          chip(p.langs.join(" · "),"","","globe")+
+        '</span>'+
+      '</span>'+
+    '</button>'+
+    '<div class="actions">'+
+      '<button class="btn-dark press" data-act="call" data-id="'+p.id+'"'+(p.online?'':' disabled')+'>'+
+        ic('phone',17)+(p.online?"בצלצול קפיצה":"ההילה כבויה")+'</button>'+
+      '<button class="btn-icon press" data-act="call" data-id="'+p.id+'"'+(p.online?'':' disabled')+
+        ' aria-label="הודעה ל'+esc(p.name)+'">'+ic('msg',19)+'</button>'+
+    '</div></article>';
+}
+
+function hero(){
+  var online = ANGELS.filter(function(p){return p.online;}).length + 9;
+  var h = '';
+  for (var i=0;i<24;i++) h += '<i class="'+(i<Math.min(online,24)?'lit':'')+'" style="animation-delay:'+((i%6)*0.5)+'s"></i>';
+  return '<section class="hero">'+
+    '<div class="halos" aria-hidden="true">'+h+'</div>'+
+    '<p class="count"><b>'+online+'</b> מלאכים עם ההילה דלוקה עכשיו</p>'+
+    '<h2 class="display">כנפיים אין לנו.<br>יש לנו זמן.</h2>'+
+    '<p id="ticker">'+esc(TICKER[S.tick])+'</p>'+
+    '<button class="cta press" data-act="hero">'+ic('phone',20)+'שלחו לי מלאך</button>'+
+    '<p class="note">אנונימי · בלי הרשמה · בלי שאלות מיותרות</p>'+
+  '</section>';
+}
+
+
+function learnSection(){
+  var cards = [
+    {id:"addiction",icon:"spark",bg:"#FFF4E0",color:"var(--halo-deep)",title:"התמכרות",sub:"איך זה מתחיל, ואיך מזהים שכבר מגזימים"},
+    {id:"sharing",icon:"msg",bg:"#F2F0FF",color:"var(--lilac)",title:"קשה לי לשתף",sub:"ניכור, בדידות והאפשרות שמישהו באמת יבין"},
+    {id:"community",icon:"users",bg:"#E8F7F1",color:"var(--grass)",title:"חשיבות הקהילה",sub:"אתה לא לבד. ביחד אפשר לזוז קדימה"},
+    {id:"selfworth",icon:"heart",bg:"#FFF0F2",color:"var(--rose)",title:"למה כולם מסתדרים ורק אני לא?",sub:"למה אני כל כך לא מובן — ניתוח מעמיק"}
+  ];
+  return '<section class="learn-section">'+
+    '<h3 class="display learn-title">רגע להבין מה עובר עליי</h3>'+
+    '<p class="small muted" style="margin:0">ארבעה דברים שכדאי לדבר עליהם, בלי שיפוט ובלי קלישאות.</p>'+
+    '<div class="learn-grid">'+cards.map(function(c){
+      return '<button class="learn-card soft" data-act="learn" data-id="'+c.id+'">'+
+        '<span class="learn-ic" style="background:'+c.bg+';color:'+c.color+'">'+ic(c.icon,21)+'</span>'+
+        '<span style="flex:1"><b>'+c.title+'</b><span class="small muted">'+c.sub+'</span></span>'+
+        '<span class="muted" aria-hidden="true">‹</span></button>';
+    }).join('')+'</div></section>';
+}
+
+function homeScreen(){
+  var list = ANGELS.filter(function(p){
+    if (S.filter==="all") return true;
+    if (p.kind===S.filter) return true;
+    var wanted = TOPIC_FILTERS[S.filter];
+    if (!wanted) return false;
+    return p.topics.some(function(topic){ return wanted.indexOf(topic)>-1; });
+  }).sort(function(a,b){ return (b.online?1:0)-(a.online?1:0); });
+  var f = FILTERS.map(function(x){
+    return '<button data-act="filter" data-id="'+x.id+'" aria-pressed="'+(S.filter===x.id)+'">'+x.label+'</button>';
+  }).join("");
+  return '<header class="top"><div>'+
+      '<h1 class="display" style="font-size:26px">אנג\'ל</h1>'+
+      '<p class="small muted" style="margin:0">המלאך השומר שלך</p></div>'+
+      '<button class="sos press" data-act="sheet" data-id="emergency">'+ic('buoy',16)+'עזרה דחופה</button>'+
+    '</header>'+
+    hero()+
+    '<div class="filters">'+f+'</div>'+
+    '<p class="small muted" style="font-weight:600;margin:0 0 8px">'+
+      list.filter(function(p){return p.online;}).length+' דלוקים עכשיו</p>'+
+    list.map(angelCard).join("")+
+    learnSection()+
+    '<p class="disclaimer">אנג\'ל הוא מרחב הקשבה בין אנשים. הוא לא טיפול ולא תחליף לקו חירום.</p>';
+}
+
+function chatsScreen(){
+  return '<header class="top"><h1 class="display" style="font-size:22px">השיחות שלי</h1></header>'+
+    '<div class="card" style="text-align:center;padding:24px">'+
+      '<div style="width:52px;height:52px;border-radius:999px;background:#FFF4E0;color:var(--halo-deep);'+
+        'display:grid;place-items:center;margin:0 auto 12px">'+ic('msg',24)+'</div>'+
+      '<p style="font-weight:700;margin:0 0 4px">ריק כאן. וזה בסדר גמור.</p>'+
+      '<p class="small muted" style="margin:0">שיחות נשמרות רק אם שני הצדדים בוחרים בכך. אחרת הכול נמחק ברגע שהשיחה נגמרת.</p>'+
+    '</div>';
+}
+
+function meScreen(){
+  var me = {ini:"ע", online:S.available, kind:"oct"};
+  var tiles = [
+    ["users","מפגש הדרכה קבוצתי","יום ג׳ 20:00 · חובה אחת לחודש"],
+    ["clock","המשמרות שלי","8 שעות מתוך 12 השבוע"],
+    ["shield","מדריכה תורנית","רותם זמינה עכשיו · להתייעצות בכל שלב"],
+    ["coffee","אחרי שיחה קשה","תחקיר קצר ופריקה. גם עליך שומרים"]
+  ].map(function(t){
+    return '<button class="tile soft"><span class="ic">'+ic(t[0],20)+'</span><span style="flex:1">'+
+      '<span style="display:block;font-weight:700">'+t[1]+'</span>'+
+      '<span class="small muted" style="display:block">'+t[2]+'</span></span></button>';
+  }).join("");
+
+  return '<header class="top"><h1 class="display" style="font-size:22px">המרחב שלי</h1></header>'+
+    '<div class="card">'+
+      '<div class="row" style="gap:16px;margin-bottom:16px">'+avatar(me)+
+        '<div><div style="font-weight:700">עומר</div>'+
+        '<div class="small muted">מלאך מוסמך · 12 שיחות החודש</div></div></div>'+
+      '<button class="toggle soft" data-act="toggle" aria-pressed="'+S.available+'">'+
+        '<span><span style="font-weight:700;font-size:15px;color:'+
+          (S.available?'var(--halo-deep)':'var(--ink-soft)')+'">'+
+          (S.available?"ההילה שלי דלוקה":"ההילה כבויה")+'</span>'+
+        '<span class="xs muted" style="display:block">'+
+          (S.available?"אפשר להעביר אליי שיחות":"לא מקבל/ת שיחות כרגע. גם למלאכים מגיעה הפסקה")+'</span></span>'+
+        '<span class="switch"><b></b></span></button>'+
+    '</div>'+tiles;
+}
+
+/* ------------------------------ sheets ---------------------------- */
+function sheetTriage(){
+  var opts = [
+    ["talk","סתם בא לי לדבר","בדידות, יום מציק, מחשבות"],
+    ["hard","עובר/ת תקופה קשה","יש משהו ספציפי שמעיק"],
+    ["crisis","קשה לי מאוד עכשיו","אני לא בטוח/ה שאני מסתדר/ת לבד"]
+  ].map(function(o){
+    return '<button class="opt soft" data-act="triage" data-id="'+o[0]+'"><b>'+o[1]+'</b>'+
+      '<span class="small muted">'+o[2]+'</span></button>';
+  }).join("");
+  return '<h3 class="display">מה הכי נכון עכשיו?</h3>'+
+    '<p class="small muted" style="margin:0 0 16px">שאלה אחת בלבד, כדי לחבר אותך נכון.</p>'+opts;
+}
+
+/* Sober zone — no jokes below this line, by design. */
+function sheetCrisis(){
+  return '<div style="width:48px;height:48px;border-radius:16px;background:#FFF4E0;color:var(--halo-deep);'+
+      'display:grid;place-items:center;margin-bottom:12px">'+ic('heart',24)+'</div>'+
+    '<h3 class="display">טוב שאמרת.</h3>'+
+    '<p class="small muted" style="margin:0 0 16px;line-height:1.6">ברגעים כאלה אנחנו מחברים אותך קודם כול '+
+      'לאיש מקצוע תורן, ולא למתנדב. אם יש סכנה מיידית — ער"ן זמינים בכל שעה במספר 1201.</p>'+
+    '<button class="big dark press" data-act="crisis-pro" style="margin-bottom:10px">'+
+      ic('phone',19)+'חברו אותי לאיש מקצוע תורן</button>'+
+    '<button class="big red press" data-act="sheet" data-id="emergency">קווי החירום והמספרים</button>';
+}
+
+function sheetEmergency(){
+  return '<h3 class="display">עזרה עכשיו</h3>'+
+    '<p class="small muted" style="margin:0 0 16px">אם יש סכנה מיידית לך או למישהו אחר — התקשרו למספרים האלה. '+
+      'הם מאוישים בכל שעה.</p>'+
+    HOTLINES.map(function(h){
+      var href = h.num.indexOf(".")>-1 ? "https://"+h.num : "tel:"+h.num.replace(/[^\d*]/g,"");
+      return '<a class="line-item soft" href="'+href+'"><span><span style="font-weight:700;display:block">'+
+        h.name+'</span><span class="small muted">'+h.detail+'</span></span>'+
+        '<span class="num">'+h.num+'</span></a>';
+    }).join("");
+}
+
+function sheetProfile(){
+  var p = byId(S.profileId); if(!p) return "";
+  var t = TAGS[p.kind];
+  return '<div class="row" style="gap:16px;margin-bottom:16px">'+avatar(p,64)+
+      '<div><div class="row" style="gap:6px"><h3 class="display">'+esc(p.name)+'</h3>'+
+      '<span style="color:var(--grass)">'+ic('shield',17)+'</span></div>'+
+      '<p class="small muted" style="margin:0">'+p.age+' · '+p.talks+' שיחות</p></div></div>'+
+    '<div class="box"><p class="label">מה עברתי</p><p style="margin:0">'+esc(p.been)+'</p>'+
+      '<p class="label" style="margin-top:12px">איפה אני היום</p><p style="margin:0">'+esc(p.where)+'</p></div>'+
+    '<div class="chips" style="margin-bottom:12px">'+chip(t.label,t.raw,t.raw+"18")+
+      p.topics.map(function(x){return chip(x);}).join("")+'</div>'+
+    '<div class="row small" style="gap:8px;color:var(--grass);margin-bottom:16px">'+ic('shield',16)+
+      'עבר/ה ראיון, מיון מקצועי והכשרת הקשבה</div>'+
+    '<button class="big '+(p.online?'gold':'')+' press" data-act="call" data-id="'+p.id+'"'+
+      (p.online?'':' disabled')+'>'+ic('phone',19)+
+      (p.online?'בצלצול קפיצה':'ההילה כבויה כרגע')+'</button>';
+}
+
+
+function sheetLearn(){
+  var id = S.learnId;
+  if (id==="addiction") return '<h3 class="display">התמכרות — מתי זה כבר יותר מדי?</h3>'+
+    '<div class="learn-body small muted" style="margin-top:12px">'+
+    '<p>התמכרות לא תמיד מתחילה ברגע דרמטי. לפעמים היא מתחילה ממשהו שעוזר לכבות לחץ, בדידות, שעמום או כאב — ואז לאט לאט הופך למשהו שקשה לוותר עליו.</p>'+
+    '<h4 style="color:var(--ink)">איך זה יכול להתחיל?</h4>'+
+    '<p>כשחומר או התנהגות מתחילים להפוך לפתרון הקבוע שלנו לכל מצב: כדי להירדם, להירגע, להיות חברתיים, לא לחשוב או פשוט לעבור את היום.</p>'+
+    '<h4 style="color:var(--ink)">איך מזהים שאולי מגזימים?</h4>'+
+    '<ul><li>צריך יותר כדי להגיע לאותה תחושה.</li><li>מתכננים להפחית — ושוב חוזרים לאותה כמות.</li><li>זה מתחיל לפגוע בשינה, בעבודה, בכסף, ביחסים או בבריאות.</li><li>המחשבה על הדבר תופסת יותר ויותר מקום ביום.</li><li>מרגישים עצבנות, אי־שקט או קושי משמעותי כשאין אותו.</li></ul>'+
+    '<div class="learn-quote" style="color:var(--ink)">לשים לב למה שקורה זו לא חולשה. זאת התחלה של שליטה מחדש.</div></div>';
+
+  if (id==="sharing") return '<h3 class="display">כשקשה לשתף</h3>'+
+    '<div class="learn-body small muted" style="margin-top:12px">'+
+    '<p>ניכור הוא התחושה שאתה ליד אנשים — אבל לא באמת איתם. שאתה רואה את העולם מבחוץ, ואף אחד לא באמת יודע מה קורה אצלך בפנים.</p>'+
+    '<h4 style="color:var(--ink)">למה בדיכאון מרגישים כל כך לבד?</h4>'+
+    '<p>כשאנחנו בדיכאון או במצוקה, קל להרגיש שאף אחד לא יבין, שלא כדאי להכביד, או שאין טעם להסביר. לפעמים אנחנו גם נסגרים דווקא ברגע שבו אנחנו הכי זקוקים לקשר.</p>'+
+    '<h4 style="color:var(--ink)">אבל יש מי שמסוגל להזדהות</h4>'+
+    '<p>לפעמים האדם שהכי יכול להבין הוא דווקא מי שכבר היה במקום דומה. לא כדי לתת פתרונות, אלא כדי להגיד: אני מכיר את התחושה הזאת. אני נשאר כאן איתך.</p>'+
+    '<div class="learn-quote" style="color:var(--ink)">לא חייבים לספר הכול. לפעמים מספיק להתחיל במשפט אחד: “קשה לי עכשיו”.</div></div>';
+
+  if (id==="selfworth") return '<h3 class="display">למה כולם מסתדרים ורק אני לא?</h3>'+
+    '<div class="learn-body small muted" style="margin-top:12px">'+
+    '<p>אחת התחושות הכואבות ביותר היא להסתכל סביב ולחשוב שלכולם יש מפה ורק לך אין. אחרים נראים כאילו הם יודעים איך לעבוד, לאהוב, להתחבר, להתקדם ולהחזיק את עצמם — ואתה מרגיש תקוע, לא מובן, או תמיד צעד מאחור.</p>'+
+    '<h4 style="color:var(--ink)">למה זה מרגיש כאילו כולם מסתדרים?</h4>'+
+    '<p>אנחנו רואים אצל אחרים בעיקר את התוצאה החיצונית, אבל חיים מבפנים את כל הספקות שלנו. אנחנו רואים זוגיות, עבודה, חברים וחיוכים — ולא את החרדה בלילה, הריבים, החובות, תחושת הריקנות או הפחד שלהם. ההשוואה לכן כמעט תמיד לא הוגנת: החיים המלאים שלך מול חלון הראווה של מישהו אחר.</p>'+
+    '<h4 style="color:var(--ink)">למה אני מרגיש כל כך לא מובן?</h4>'+
+    '<p>כשיש בפנים עומס, בושה, חרדה, דיכאון או תחושת כישלון, לפעמים קשה אפילו להסביר מה קורה. ואז נוצר מעגל: אני לא מצליח להסביר → אחרים לא מבינים → אני נסגר יותר → הבדידות גדלה. זה לא בהכרח אומר שאין מי שיכול להבין אותך; לפעמים עוד לא נמצא האדם, המקום או המשפט שמאפשרים לך להתחיל להיפתח.</p>'+
+    '<h4 style="color:var(--ink)">כשאני הופך את עצמי לאויב שלי</h4>'+
+    '<p>ביקורת עצמית יכולה להישמע כמו ניסיון להשתפר, אבל כשהיא קבועה היא שוחקת. אם כל טעות הופכת ל“אני כישלון”, כל דחייה ל“אף אחד לא ירצה אותי”, וכל תקופה קשה ל“ככה יהיו החיים שלי תמיד” — המוח מתחיל להתייחס לפרשנות כאילו היא עובדה.</p>'+
+    '<h4 style="color:var(--ink)">ומה לגבי אהבה עצמית?</h4>'+
+    '<p>המשפט “אם לא אוהב את עצמי לא אוכל לאהוב אחרים” מבטא רעיון חשוב: היחס שלנו לעצמנו משפיע מאוד על הדרך שבה אנחנו נכנסים לקשר. כשאנחנו תלויים לחלוטין באישור מבחוץ כדי להרגיש בעלי ערך, כל ריחוק קטן עלול להרגיש כמו איום. אהבה עצמית לא אומרת לחשוב שאתה מושלם — אלא להיות מסוגל להישאר בצד שלך גם כשאתה מבולבל, נכשל או מפחד.</p>'+
+    '<div class="learn-quote" style="color:var(--ink)">אם לא אוהב את עצמי לא אוכל לאהוב אחרים.</div>'+
+    '<h4 style="color:var(--ink)">אז מה עושים עם התחושה הזאת?</h4>'+
+    '<p>לא צריך לפתור את כל החיים בבת אחת. אפשר להתחיל מלדבר עם אדם אחד בלי להציג גרסה “מסודרת” של עצמך. לשים לב מתי אתה משווה את מאחורי הקלעים שלך לבמה של אחרים. ולהחליף את השאלה “מה לא בסדר איתי?” בשאלה קצת יותר מועילה: “מה כואב לי, ומה אני צריך עכשיו?”</p>'+
+    '<div class="learn-quote" style="color:var(--ink)">אתה לא חייב להיות במקום שבו אחרים נמצאים. אתה צריך להתחיל מהמקום שבו אתה נמצא.</div></div>';
+
+  return '<h3 class="display">חשיבות הקהילה</h3>'+
+    '<div class="learn-body small muted" style="margin-top:12px">'+
+    '<p>אנחנו לא אמורים לעבור הכול לבד. קהילה היא לא רק קבוצה של אנשים — היא הידיעה שיש מי שרואה אותך, מי שמקשיב לך, ומי שמוכן להישאר גם כשאין תשובה מהירה.</p>'+
+    '<h4 style="color:var(--ink)">כשמתאחדים, דברים מתחילים לזוז</h4>'+
+    '<p>אנשים שעברו כאב, החלמה, אובדן, חרדה, התמכרות או בדידות יכולים להפוך את הניסיון שלהם לכוח עבור מישהו אחר. כל שיחה כזאת מזכירה לנו שאנחנו לא לבד.</p>'+
+    '<div class="learn-quote" style="color:var(--ink)">מגיע לנו לחיות. מגיע לנו להגשים. מגיע לנו להרגיש שוב את האושר שכבר כמעט שכחנו איך הוא מרגיש. ואם נעשה את זה ביחד — נוכל לעשות דברים מדהימים.</div></div>';
+}
+
+function sheetAfter(){
+  var p = byId(S.afterId); if(!p) return "";
+  if (S.afterSent){
+    return '<div style="text-align:center;padding:8px 0">'+
+      '<div style="width:52px;height:52px;border-radius:999px;background:#E4F6EF;color:var(--grass);'+
+        'display:grid;place-items:center;margin:0 auto 12px">'+ic('check',26)+'</div>'+
+      '<h3 class="display">תודה. ההילה נשארת דלוקה.</h3>'+
+      '<p class="small muted" style="margin:4px 0 16px">אפשר לחזור לכאן בכל שעה, גם ב-4 לפנות בוקר.</p>'+
+      '<button class="big dark press" data-act="close">סגירה</button></div>';
+  }
+  var opts = ["עזר לי","בסדר","פחות התאים"].map(function(x){
+    return '<button class="soft" data-act="rate" style="flex:1;min-height:52px;border-radius:16px;'+
+      'background:#F2F4FB;font-weight:600;font-size:14px">'+x+'</button>';
+  }).join("");
+  return '<h3 class="display">איך היה עם '+esc(p.name)+'?</h3>'+
+    '<p class="small muted" style="margin:0 0 16px">אנונימי. עוזר לנו לשמור על איכות ההקשבה.</p>'+
+    '<div style="display:flex;gap:8px;margin-bottom:12px">'+opts+'</div>'+
+    '<button class="soft small muted" data-act="rate" style="width:100%;min-height:44px">'+
+      'דיווח על התנהגות לא ראויה</button>';
+}
+
+function sheetHTML(){
+  if (!S.sheet) return "";
+  var body = S.sheet==="triage" ? sheetTriage()
+    : S.sheet==="crisis" ? sheetCrisis()
+    : S.sheet==="emergency" ? sheetEmergency()
+    : S.sheet==="profile" ? sheetProfile()
+    : S.sheet==="after" ? sheetAfter()
+    : S.sheet==="learn" ? sheetLearn() : "";
+  return '<div class="overlay" data-act="close"></div>'+
+    '<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>'+body+'</div>';
+}
+
+/* --------------------------- full screens ------------------------- */
+function matchingHTML(){
+  var t = S.matching.target ? byId(S.matching.target) : null;
+  var sub = S.matching.serious ? "איש מקצוע תורן עונה מיד"
+    : (t ? "בדרך כלל עונים תוך שניות" : WAIT[S.wait]);
+  return '<div class="full"><div class="pulse"><span class="ring"></span><span class="ring"></span>'+
+    '<span class="core">'+ic('phone',36)+'</span></div>'+
+    '<h3 class="display" style="font-size:22px">'+(t?'מצלצלים ל'+esc(t.name)+'…':'מחברים אותך…')+'</h3>'+
+    '<p id="wait" class="small" style="color:#B4BBE6;margin:8px 0 0">'+esc(sub)+'</p></div>';
+}
+
+function callHTML(){
+  var p = byId(S.callId);
+  var s = Math.floor((Date.now()-S.callStart)/1000);
+  var mm = String(Math.floor(s/60)); while(mm.length<2) mm="0"+mm;
+  var ss = String(s%60); while(ss.length<2) ss="0"+ss;
+  return '<div class="full" style="justify-content:space-between">'+
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%">'+
+      '<div class="call-face">'+esc(p.ini)+'</div>'+
+      '<h3 class="display" style="font-size:24px">'+esc(p.name)+'</h3>'+
+      '<p class="small" style="color:#B4BBE6;margin:4px 0 0">'+esc(p.been)+'</p>'+
+      '<p id="timer" class="small" style="color:var(--halo);direction:ltr;margin:12px 0 0">'+mm+':'+ss+'</p>'+
+      '<div class="guide"><p class="xs" style="color:var(--halo);font-weight:600;margin:0 0 4px">למאזין/ה</p>'+
+        '<p class="small" style="color:#D5DAF2;margin:0;line-height:1.6">להקשיב, לא לייעץ. אם עולה סכנה — '+
+        'לוחצים על "העברה לאיש מקצוע" ומדריך תורן נכנס לשיחה.</p></div>'+
+    '</div>'+
+    '<div style="width:100%">'+
+      '<button class="transfer press" data-act="sheet" data-id="emergency">העברה לאיש מקצוע תורן</button>'+
+      '<div class="call-btns">'+
+        '<button class="circ press" data-act="mute" aria-label="'+(S.muted?"ביטול השתקה":"השתקה")+'">'+
+          ic(S.muted?'micOff':'mic',24)+'</button>'+
+        '<button class="circ end press" data-act="end" aria-label="סיום שיחה">'+
+          ic('phone',28,'style="transform:rotate(135deg)"')+'</button>'+
+      '</div></div></div>';
+}
+
+function navHTML(){
+  return '<nav>'+[["home","home","בית"],["chats","msg","שיחות"],["me","user","אני"]].map(function(t){
+    return '<button data-act="tab" data-id="'+t[0]+'" aria-current="'+(S.tab===t[0])+'">'+
+      ic(t[1],22)+'<span>'+t[2]+'</span></button>';
+  }).join("")+'</nav>';
+}
+
+/* ----------------------------- render ---------------------------- */
+function render(){
+  var screen = S.tab==="home" ? homeScreen() : S.tab==="chats" ? chatsScreen() : meScreen();
+  document.getElementById("app").innerHTML =
+    '<main class="wrap">'+screen+'</main>'+navHTML()+sheetHTML()+
+    (S.matching?matchingHTML():"")+(S.callId?callHTML():"");
+}
+
+/* ---------------------------- behaviour --------------------------- */
+document.addEventListener("click", function(e){
+  var el = e.target.closest ? e.target.closest("[data-act]") : null;
+  if (!el || el.disabled) return;
+  var act = el.getAttribute("data-act"), id = el.getAttribute("data-id");
+  if (el.tagName === "A") return; // hotline links dial out
+
+  if (act==="tab"){ S.tab = id; S.sheet=null; }
+  else if (act==="filter"){ S.filter = id; }
+  else if (act==="sheet"){ S.sheet = id; }
+  else if (act==="close"){ S.sheet=null; S.afterId=null; S.afterSent=false; S.learnId=null; }
+  else if (act==="open"){ S.profileId = +id; S.sheet="profile"; }
+  else if (act==="hero"){ S.sheet="triage"; }
+  else if (act==="learn"){ S.learnId=id; S.sheet="learn"; }
+  else if (act==="triage"){
+    S.sheet=null;
+    if (id==="crisis"){ S.sheet="crisis"; }
+    else { startMatch(null,false); }
+  }
+  else if (act==="crisis-pro"){
+    S.sheet=null;
+    var pro = ANGELS.filter(function(p){return p.kind==="pro";})[0];
+    startMatch(pro.id,true);
+  }
+  else if (act==="call"){ S.sheet=null; startMatch(+id,false); }
+  else if (act==="mute"){ S.muted = !S.muted; }
+  else if (act==="end"){ endCall(); }
+  else if (act==="rate"){ S.afterSent = true; }
+  else if (act==="toggle"){ S.available = !S.available; }
+  render();
+});
+
+function startMatch(targetId, serious){
+  S.matching = {target:targetId, serious:!!serious};
+  S.wait = 0;
+  render();
+  setTimeout(function(){
+    if (!S.matching) return;
+    var t = S.matching.target || ANGELS.filter(function(p){return p.online && p.kind!=="pro";})[0].id;
+    S.matching = null; S.callId = t; S.callStart = Date.now(); S.muted = false;
+    render();
+  }, 2000);
+}
+
+function endCall(){
+  S.afterId = S.callId; S.afterSent = false;
+  S.callId = null; S.sheet = "after";
+}
+
+/* light-touch timers: update single nodes, never re-render the whole app */
+setInterval(function(){
+  var t = document.getElementById("timer");
+  if (S.callId && t){
+    var s = Math.floor((Date.now()-S.callStart)/1000);
+    var mm = String(Math.floor(s/60)); while(mm.length<2) mm="0"+mm;
+    var ss = String(s%60); while(ss.length<2) ss="0"+ss;
+    t.textContent = mm+":"+ss;
+  }
+  var w = document.getElementById("wait");
+  if (S.matching && !S.matching.target && !S.matching.serious && w){
+    S.wait = (S.wait+1) % WAIT.length;
+    w.textContent = WAIT[S.wait];
+  }
+}, 1000);
+
+setInterval(function(){
+  S.tick = (S.tick+1) % TICKER.length;
+  var el = document.getElementById("ticker");
+  if (el){ el.textContent = TICKER[S.tick]; el.style.animation="none"; void el.offsetWidth; el.style.animation=""; }
+}, 5000);
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape" && S.sheet){ S.sheet=null; S.afterId=null; S.afterSent=false; render(); }
+});
+
+render();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+
+<!-- ANGEL STANDALONE BACKUP 2026-08-20 -->
+<script>
+window.ANGEL_SUPABASE={url:'https://iwovyohhrcfkuzpqtgdi.supabase.co',key:['sb','publishable','QowoxwpAhkR28Kv7Veq8Pw','7uDzcT','g'].join('_')};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+var sb=null,session=null;
+var SITE='https://roeekim-alt.github.io/Angel/';
+function toast(m){var x=document.createElement('div');x.textContent=m;x.style='position:fixed;z-index:500;left:16px;right:16px;bottom:90px;max-width:408px;margin:auto;background:#1F2749;color:white;padding:12px;border-radius:14px;text-align:center;font-family:Assistant';document.body.appendChild(x);setTimeout(function(){x.remove()},3200)}
+function translateError(err){var s=(err&&err.message||String(err||'')).toLowerCase();if(s.indexOf('email not confirmed')>-1)return 'המייל עדיין לא אומת.';if(s.indexOf('rate limit')>-1||s.indexOf('security purposes')>-1)return 'נשלחו יותר מדי בקשות בזמן קצר. המתן מעט ונסה שוב.';if(s.indexOf('invalid login credentials')>-1)return 'האימייל או הסיסמה אינם נכונים.';if(s.indexOf('already_registered')>-1)return 'החשבון כבר קיים. לחץ על התחברות.';if(s.indexOf('weak_password')>-1)return 'הסיסמה חייבת להכיל לפחות 8 תווים.';return err&&err.message?err.message:'אירעה שגיאה. נסה שוב.'}
+function modal(){var old=document.getElementById('angelAuth');if(old)old.remove();var d=document.createElement('div');d.id='angelAuth';d.style='position:fixed;inset:0;z-index:480;background:#EDF0FA;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Assistant;color:#1F2749';d.innerHTML='<div style="width:100%;max-width:410px;background:white;border-radius:24px;padding:20px"><h2>ברוכים הבאים לאנג׳ל</h2><p>כדי ליצור פרופיל צריך חשבון.</p><input id="sbEmail" type="email" placeholder="אימייל" autocomplete="email" style="box-sizing:border-box;width:100%;padding:12px;margin-bottom:8px"><input id="sbPass" type="password" placeholder="סיסמה - לפחות 8 תווים" autocomplete="current-password" style="box-sizing:border-box;width:100%;padding:12px;margin-bottom:10px"><div style="display:flex;gap:8px"><button id="sbLogin" style="flex:1;padding:12px;background:#1F2749;color:white;border:0;border-radius:12px">התחברות</button><button id="sbSignup" style="flex:1;padding:12px;background:#FFC24D;border:0;border-radius:12px">יצירת חשבון</button></div><button id="sbResend" style="width:100%;margin-top:8px;padding:11px;border:1px solid #D7DCEF;background:#fff;color:#1F2749;border-radius:12px;font-weight:700">שלח מייל אימות מחדש</button><button id="sbGuest" style="width:100%;margin-top:8px;padding:10px;border:0;border-radius:12px">המשך צפייה</button><p id="sbMsg" style="line-height:1.5"></p></div>';document.body.appendChild(d);document.getElementById('sbGuest').onclick=function(){d.remove()};document.getElementById('sbLogin').onclick=function(){login()};document.getElementById('sbSignup').onclick=function(){signup()};document.getElementById('sbResend').onclick=resend}
+window.AngelAuthOpen=modal;
+function credentials(){var email=document.getElementById('sbEmail').value.trim(),password=document.getElementById('sbPass').value,msg=document.getElementById('sbMsg');if(!email||password.length<8){msg.textContent='הזן אימייל וסיסמה של לפחות 8 תווים';return null}return {email:email,password:password,msg:msg}}
+async function login(){var c=credentials();if(!c)return;c.msg.textContent='מתחבר…';var r=await sb.auth.signInWithPassword({email:c.email,password:c.password});if(r.error){c.msg.textContent=translateError(r.error);return}session=r.data.session;document.getElementById('angelAuth')?.remove();toast('התחברת בהצלחה')}
+async function signup(){var c=credentials();if(!c)return;var btn=document.getElementById('sbSignup');btn.disabled=true;c.msg.textContent='יוצר חשבון…';try{var res=await fetch(window.ANGEL_SUPABASE.url+'/functions/v1/angel-signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':window.ANGEL_SUPABASE.key},body:JSON.stringify({email:c.email,password:c.password})});var out=await res.json();if(!res.ok&&out.error!=='already_registered')throw new Error(out.error||out.message||'signup_failed');if(out.error==='already_registered'){c.msg.textContent='החשבון כבר קיים. נסה להתחבר.';return}var r=await sb.auth.signInWithPassword({email:c.email,password:c.password});if(r.error)throw r.error;session=r.data.session;document.getElementById('angelAuth')?.remove();toast('החשבון נוצר והתחברת ✓')}catch(err){c.msg.textContent=translateError(err)}finally{btn.disabled=false}}
+async function resend(){var email=document.getElementById('sbEmail').value.trim(),msg=document.getElementById('sbMsg'),btn=document.getElementById('sbResend');if(!email){msg.textContent='הזן קודם את כתובת האימייל שלך.';return}btn.disabled=true;btn.textContent='שולח…';var r=await sb.auth.resend({type:'signup',email:email,options:{emailRedirectTo:SITE}});if(r.error){msg.textContent=translateError(r.error);btn.disabled=false;btn.textContent='שלח מייל אימות מחדש';return}msg.textContent='מייל אימות חדש נשלח.';var sec=60;btn.textContent='אפשר לשלוח שוב בעוד '+sec+' שניות';var tm=setInterval(function(){sec--;if(sec<=0){clearInterval(tm);btn.disabled=false;btn.textContent='שלח מייל אימות מחדש'}else btn.textContent='אפשר לשלוח שוב בעוד '+sec+' שניות'},1000)}
+async function boot(){var c=window.ANGEL_SUPABASE;if(!c)return;sb=window.AngelSupabaseClient||(window.AngelSupabaseClient=window.supabase.createClient(c.url,c.key));var r=await sb.auth.getSession();session=r.data.session;if(!session)setTimeout(modal,250);sb.auth.onAuthStateChange(function(_e,s){session=s})}
+function start(){if(window.supabase)boot();else{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=boot;document.head.appendChild(s)}}
+start();
+})();
+</script>
+<script>
+/* Angel Social Network v3 — single shared Supabase client */
+(function(){
+'use strict';
+var sb=null,session=null,heartTimer=null,chatTimer=null;
+var S={view:'feed',profile:null,members:[],connections:[],posts:[],groups:[],chatUser:null,chatId:null,messages:[],group:null,groupMessages:[]};
+function q(s){return document.querySelector(s)}
+function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(t){var x=document.createElement('div');x.className='a3toast';x.textContent=t;document.body.appendChild(x);setTimeout(function(){x.remove()},3000)}
+function css(){if(q('#angel-social-v3-css'))return;var s=document.createElement('style');s.id='angel-social-v3-css';s.textContent=`
+#a3mount{max-width:470px;margin:0 auto;padding:14px 14px calc(112px + env(safe-area-inset-bottom));color:#1f2749}#a3mount *{box-sizing:border-box}.a3top{padding:8px 0 13px}.a3top h1{font-family:'Suez One','Assistant',serif;margin:0;font-size:25px}.a3sub{font-size:13px;color:#717b9b}.a3card{display:block!important;background:#fff;border:1px solid #e2e6f0;border-radius:21px;padding:15px;margin-bottom:11px;min-height:0!important;height:auto!important}.a3tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}.a3tabs button{min-height:40px!important;height:40px!important;padding:4px!important;border-radius:12px;background:#f2f4f9;font-weight:700;font-size:12px;flex:none!important}.a3tabs button.on{background:#1f2749;color:#fff}.a3btn{display:inline-flex!important;align-items:center;justify-content:center;min-height:42px!important;height:42px!important;max-height:48px!important;padding:0 13px!important;border:0;border-radius:13px;font-weight:700;flex:0 0 auto!important}.a3btn.dark{background:#1f2749;color:#fff}.a3btn.gold{background:#ffc24d;color:#33270b}.a3btn.soft{background:#f1f3f8;color:#1f2749}.a3btn.full{display:flex!important;width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important}.a3form{display:block!important}.a3form label{display:block;margin:12px 0 5px;font-size:13px;font-weight:800}.a3form input,.a3form textarea,.a3form select{display:block;width:100%;height:auto;min-height:44px;border:1px solid #dce1ec;border-radius:13px;padding:10px 12px;background:#fff;font:inherit}.a3form textarea{min-height:88px;resize:vertical}.a3hero{text-align:center}.a3avatar{width:50px;height:50px;border-radius:17px;background:#edf0f7;display:grid;place-items:center;overflow:hidden;font-weight:800;flex:none}.a3avatar img{width:100%;height:100%;object-fit:cover}.a3hero .a3avatar{width:92px;height:92px;border-radius:28px;margin:0 auto 9px;font-size:30px}.a3name{font-weight:800}.a3meta{font-size:12px;color:#737c99;margin-top:2px}.a3tags{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:8px}.a3tag{font-size:12px;background:#f1f3f8;color:#646d88;border-radius:99px;padding:5px 8px}.a3person{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #edf0f5}.a3person:last-child{border-bottom:0}.a3grow{flex:1;min-width:0}.a3online{font-size:12px;color:#21865e;font-weight:700}.a3dot{display:inline-block;width:8px;height:8px;background:#32b77b;border-radius:50%;margin-left:5px}.a3actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.a3empty{text-align:center;color:#7a839f;padding:25px 8px}.a3notice{background:#fff7df;border:1px solid #efdaa0;border-radius:14px;padding:11px;font-size:13px;line-height:1.5;margin-bottom:10px}.a3composer textarea{width:100%;min-height:82px;border:0;background:#f7f8fc;border-radius:14px;padding:11px;font:inherit}.a3row{display:flex;gap:7px;margin-top:8px}.a3row input{flex:1;min-width:0;border:1px solid #dce1ec;border-radius:13px;padding:10px}.a3posthead{display:flex;gap:10px;align-items:center}.a3postbody{margin:11px 0;line-height:1.6}.a3comment{background:#f7f8fc;border-radius:11px;padding:8px 10px;margin-top:6px;font-size:13px}.a3compose{display:flex;gap:7px;margin-top:9px}.a3compose input{flex:1;min-width:0;border:1px solid #dce1ec;border-radius:13px;padding:10px}.a3chat{display:flex!important;flex-direction:column;gap:7px;min-height:280px!important;height:auto!important}.a3bubble{max-width:82%;padding:10px 12px;border-radius:14px}.a3bubble.me{align-self:flex-start;background:#1f2749;color:#fff}.a3bubble.them{align-self:flex-end;background:#f0f2f8}.a3therapist{font-size:11px;background:#eef0ff;color:#4d57a8;border-radius:99px;padding:3px 7px}.a3toast{position:fixed;z-index:600;left:14px;right:14px;bottom:88px;max-width:440px;margin:auto;background:#1f2749;color:#fff;padding:12px;border-radius:13px;text-align:center;font-family:Assistant}.a3hidden{display:none!important}nav button[data-a3-community]{color:#98a1be}nav button.a3current{color:#1f2749!important}
+`;document.head.appendChild(s)}
+function nav(){return q('nav')}
+function ensureNav(){var n=nav();if(!n)return;if(!n.querySelector('[data-a3-community]')){var b=document.createElement('button');b.setAttribute('data-a3-community','1');b.innerHTML='<span style="font-size:20px">◉</span><span>קהילה</span>';var c=n.querySelector('[data-id="chats"]');n.insertBefore(b,c||null)}}
+function mark(id){var n=nav();if(!n)return;n.querySelectorAll('button').forEach(function(b){b.classList.remove('a3current')});var t=id==='community'?n.querySelector('[data-a3-community]'):n.querySelector('[data-id="'+id+'"]');if(t)t.classList.add('a3current')}
+function mount(html,id){var old=q('#a3mount')||q('main.wrap')||q('#socialMount')||q('#v2mount');if(!old)return;old.outerHTML='<main id="a3mount">'+html+'</main>';mark(id)}
+function top(t,s){return '<header class="a3top"><h1>'+esc(t)+'</h1><div class="a3sub">'+esc(s||'')+'</div></header>'}
+function online(p){return !!(p&&p.last_seen&&(Date.now()-new Date(p.last_seen).getTime()<120000))}
+function avatar(p){var n=(p&&p.display_name||'?').charAt(0);return '<div class="a3avatar">'+(p&&p.avatar_url?'<img src="'+esc(p.avatar_url)+'" alt="">':esc(n))+'</div>'}
+function auth(){if(session)return true;toast('כדי להשתמש באזור הזה צריך להתחבר');if(window.AngelAuthOpen)window.AngelAuthOpen();return false}
+async function loadProfile(){if(!session)return;var r=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();if(r.error){toast('טעינת הפרופיל נכשלה');return}S.profile=r.data||{id:session.user.id,display_name:(session.user.email||'חבר').split('@')[0],bio:'',topics:[],role:'member',is_anonymous:false,avatar_url:null}}
+async function loadMembers(){if(!session)return;var r=await sb.from('profiles').select('*').neq('id',session.user.id).order('last_seen',{ascending:false,nullsFirst:false});S.members=r.data||[];var c=await sb.from('connections').select('friend_id').eq('user_id',session.user.id);S.connections=(c.data||[]).map(function(x){return x.friend_id})}
+async function loadPosts(){if(!session)return;var r=await sb.from('posts').select('id,author_id,body,image_url,topic,created_at').order('created_at',{ascending:false}).limit(40);var ps=r.data||[];if(!ps.length){S.posts=[];return}var ids=[...new Set(ps.map(function(x){return x.author_id}))];var pr=await sb.from('profiles').select('id,display_name,avatar_url,is_anonymous,role').in('id',ids);var map={};(pr.data||[]).forEach(function(p){map[p.id]=p});for(var i=0;i<ps.length;i++){ps[i].author=map[ps[i].author_id]||null;var cr=await sb.from('comments').select('id,body,created_at').eq('post_id',ps[i].id).order('created_at',{ascending:true}).limit(20);ps[i].comments=cr.data||[]}S.posts=ps}
+async function loadGroups(){if(!session)return;var r=await sb.from('groups').select('*').order('created_at',{ascending:false}).limit(50);S.groups=r.data||[]}
+function tabs(){return '<div class="a3tabs"><button data-a3-view="feed" class="'+(S.view==='feed'?'on':'')+'">שיתופים</button><button data-a3-view="members" class="'+(S.view==='members'?'on':'')+'">חברים</button><button data-a3-view="groups" class="'+(S.view==='groups'?'on':'')+'">קבוצות</button><button data-a3-view="knowledge" class="'+(S.view==='knowledge'?'on':'')+'">ידע וכלים</button></div>'}
+function person(p){var mine=S.connections.indexOf(p.id)>=0;return '<div class="a3person">'+avatar(p)+'<div class="a3grow"><div class="a3name">'+esc(p.is_anonymous?'חבר/ת קהילה':p.display_name||'חבר/ת קהילה')+' '+(p.role==='therapist'?'<span class="a3therapist">מטפל/ת</span>':'')+'</div><div class="a3meta">'+esc((p.topics||[]).slice(0,3).join(' · '))+'</div>'+(online(p)?'<div class="a3online"><span class="a3dot"></span>מחובר/ת עכשיו</div>':'')+'<div class="a3actions"><button class="a3btn gold" data-a3-chat="'+p.id+'">צ׳אט</button><button class="a3btn soft" data-a3-connect="'+p.id+'">'+(mine?'✓ בקהילה שלי':'הוסף לקהילה')+'</button></div></div></div>'}
+function post(p){var a=p.author||{display_name:'חבר/ת קהילה'};return '<article class="a3card"><div class="a3posthead">'+avatar(a)+'<div><div class="a3name">'+esc(a.is_anonymous?'חבר/ת קהילה':a.display_name||'חבר/ת קהילה')+'</div><div class="a3meta">'+new Date(p.created_at).toLocaleString('he-IL')+(p.topic?' · '+esc(p.topic):'')+'</div></div></div><div class="a3postbody">'+esc(p.body)+'</div>'+(p.image_url?'<img src="'+esc(p.image_url)+'" style="width:100%;max-height:300px;object-fit:cover;border-radius:15px">':'')+(p.comments||[]).map(function(c){return '<div class="a3comment">'+esc(c.body)+'</div>'}).join('')+'<div class="a3compose"><input id="a3c-'+p.id+'" placeholder="כתבו תגובה…"><button class="a3btn dark" data-a3-comment="'+p.id+'">שלח</button></div></article>'}
+function feed(){return '<section class="a3card a3composer"><b>מה עובר עליך היום?</b><textarea id="a3post" placeholder="אפשר לשתף מחשבה, שאלה או רגע שעבר עליך…"></textarea><div class="a3row"><input id="a3topic" placeholder="נושא (אופציונלי)"><button class="a3btn dark" data-a3-publish>פרסום</button></div></section>'+(S.posts.length?S.posts.map(post).join(''):'<div class="a3empty">עוד אין פוסטים בקהילה.</div>')}
+function members(){var on=S.members.filter(online),mine=S.members.filter(function(p){return S.connections.indexOf(p.id)>=0}),ther=S.members.filter(function(p){return p.role==='therapist'});return '<section class="a3card"><b>מחוברים עכשיו</b>'+(on.length?on.map(person).join(''):'<div class="a3empty">אין כרגע משתמשים פעילים.</div>')+'</section><section class="a3card"><b>הקהילה שלי</b>'+(mine.length?mine.map(person).join(''):'<div class="a3empty">עדיין לא הוספת חברים.</div>')+'</section><section class="a3card"><b>מטפלים בקהילה</b>'+(ther.length?ther.map(person).join(''):'<div class="a3empty">עדיין אין פרופילי מטפלים.</div>')+'</section>'}
+function groups(){return '<section class="a3card a3form"><b>יצירת קבוצה</b><label>שם הקבוצה</label><input id="a3gname"><label>תיאור</label><textarea id="a3gdesc"></textarea><label>נושא</label><input id="a3gtopic"><button class="a3btn dark full" data-a3-create-group style="margin-top:12px">יצירת קבוצה</button></section><section class="a3card"><b>קבוצות בקהילה</b>'+(S.groups.length?S.groups.map(function(g){return '<div class="a3person"><div class="a3avatar">#</div><div class="a3grow"><div class="a3name">'+esc(g.name)+'</div><div class="a3meta">'+esc(g.description||g.topic||'')+'</div><div class="a3actions"><button class="a3btn soft" data-a3-group="'+g.id+'">פתיחת הקבוצה</button></div></div></div>'}).join(''):'<div class="a3empty">עוד אין קבוצות.</div>')+'</section>'}
+function knowledge(){var arr=[['חרדה והצפה','נשימה איטית, עיגון לחושים וצמצום גירויים יכולים לעזור ברגע של הצפה. אם המצוקה חוזרת או פוגעת בתפקוד, כדאי לשקול פנייה לאיש מקצוע.'],['בדידות','קשר קבוע, גם קצר, יכול להיות משמעותי יותר מהרבה אינטראקציות שטחיות. הקהילה נועדה לעזור ליצור קשר הדרגתי עם אנשים שמבינים.'],['התמכרות והחלמה','החלמה היא תהליך. זיהוי טריגרים, אדם לפנות אליו ותוכנית לרגעים קשים יכולים לעזור.'],['טראומה ופוסט־טראומה','תגובות כמו דריכות, הימנעות, קושי בשינה או ניתוק יכולות להופיע אחרי אירועים קשים. הקהילה יכולה לתמוך, אך לא לאבחן.'],['בחירת מטפל/ת','בדקו הכשרה ורישוי רלוונטיים, תחום התמחות, ניסיון והאם אתם מרגישים בטוחים ומובנים בקשר.']];return '<div class="a3notice">המידע באנג׳ל הוא מידע כללי ותמיכה קהילתית, ואינו תחליף לאבחון או טיפול מקצועי.</div>'+arr.map(function(k){return '<section class="a3card"><b>'+esc(k[0])+'</b><p style="margin:7px 0 0;line-height:1.6;color:#59627e">'+esc(k[1])+'</p></section>'}).join('')}
+async function renderCommunity(v){if(!auth())return;if(v)S.view=v;await Promise.all([loadProfile(),loadMembers(),loadPosts(),loadGroups()]);var body=S.view==='members'?members():S.view==='groups'?groups():S.view==='knowledge'?knowledge():feed();mount(top('קהילה','חיבור, תמיכה ושיתוף בין אנשים')+tabs()+body,'community')}
+function profileHTML(){var p=S.profile||{},th=p.role==='therapist';return top('הפרופיל שלי','הפרטים נשמרים בענן בחשבון שלך')+'<section class="a3card a3hero">'+avatar(p)+'<div class="a3name">'+esc(p.display_name||'')+'</div><div class="a3meta">'+esc(p.bio||'')+'</div><div class="a3tags">'+(p.topics||[]).map(function(t){return '<span class="a3tag">'+esc(t)+'</span>'}).join('')+'</div></section><section class="a3card a3form"><label>סוג פרופיל</label><select id="a3role"><option value="member" '+(!th?'selected':'')+'>חבר/ת קהילה</option><option value="therapist" '+(th?'selected':'')+'>מטפל/ת</option></select><label>שם / כינוי</label><input id="a3name" value="'+esc(p.display_name||'')+'"><label>כמה מילים עליי</label><textarea id="a3bio">'+esc(p.bio||'')+'</textarea><label>נושאים שמדברים אליי</label><input id="a3topics" value="'+esc((p.topics||[]).join(', '))+'"><label>תמונת פרופיל</label><input id="a3image" type="file" accept="image/*"><div id="a3ther" class="'+(th?'':'a3hidden')+'"><label>תחום התמחות</label><input id="a3special" value="'+esc(p.therapist_specialty||'')+'"><label>מספר רישיון / הסמכה</label><input id="a3license" value="'+esc(p.therapist_license||'')+'"><label>אזור פעילות</label><input id="a3location" value="'+esc(p.therapist_location||'')+'"><label><input id="a3accept" type="checkbox" style="display:inline;width:auto;min-height:0" '+(p.accepting_clients?'checked':'')+'> מקבל/ת פניות חדשות</label></div><label><input id="a3anon" type="checkbox" style="display:inline;width:auto;min-height:0" '+(p.is_anonymous?'checked':'')+'> הצגת כינוי אנונימי בקהילה</label><button class="a3btn dark full" data-a3-save style="margin-top:12px">שמירת הפרופיל</button></section>'}
+async function renderProfile(){if(!auth())return;await loadProfile();mount(profileHTML(),'me')}
+async function uploadAvatar(file){if(!file)return S.profile&&S.profile.avatar_url||null;if(file.size>5*1024*1024)throw new Error('התמונה גדולה מדי. עד 5MB.');var ext=(file.name.split('.').pop()||'jpg').toLowerCase();var path=session.user.id+'/avatar.'+ext;var r=await sb.storage.from('avatars').upload(path,file,{upsert:true});if(r.error)throw r.error;return sb.storage.from('avatars').getPublicUrl(path).data.publicUrl+'?v='+Date.now()}
+async function saveProfile(){if(!auth())return;var btn=q('[data-a3-save]');if(btn){btn.disabled=true;btn.textContent='שומר…'}try{var role=q('#a3role').value,av=await uploadAvatar(q('#a3image').files[0]);var d={id:session.user.id,display_name:q('#a3name').value.trim()||(session.user.email||'חבר').split('@')[0],bio:q('#a3bio').value.trim(),topics:q('#a3topics').value.split(',').map(function(x){return x.trim()}).filter(Boolean),is_anonymous:q('#a3anon').checked,avatar_url:av,role:role,therapist_specialty:role==='therapist'?q('#a3special').value.trim():null,therapist_license:role==='therapist'?q('#a3license').value.trim():null,therapist_location:role==='therapist'?q('#a3location').value.trim():null,accepting_clients:role==='therapist'&&q('#a3accept').checked,updated_at:new Date().toISOString()};var r=await sb.from('profiles').upsert(d,{onConflict:'id'}).select('*').single();if(r.error)throw r.error;S.profile=r.data;toast('הפרופיל נשמר בענן ✓');await renderProfile()}catch(err){toast('שמירת הפרופיל נכשלה: '+err.message);if(btn){btn.disabled=false;btn.textContent='שמירת הפרופיל'}}}
+async function publish(){var b=q('#a3post').value.trim();if(!b)return;var r=await sb.from('posts').insert({author_id:session.user.id,body:b,topic:q('#a3topic').value.trim()||null});if(r.error)return toast('הפרסום נכשל');toast('הפוסט פורסם');renderCommunity('feed')}
+async function comment(id){var i=q('#a3c-'+id),b=i&&i.value.trim();if(!b)return;var r=await sb.from('comments').insert({post_id:id,author_id:session.user.id,body:b});if(r.error)return toast('התגובה לא נשמרה');renderCommunity('feed')}
+async function connect(uid){if(S.connections.indexOf(uid)>=0)await sb.from('connections').delete().eq('user_id',session.user.id).eq('friend_id',uid);else await sb.from('connections').insert({user_id:session.user.id,friend_id:uid});renderCommunity('members')}
+async function createGroup(){var n=q('#a3gname').value.trim();if(!n)return toast('צריך שם לקבוצה');var r=await sb.rpc('create_group_with_owner',{p_name:n,p_description:q('#a3gdesc').value.trim(),p_topic:q('#a3gtopic').value.trim()||null,p_private:false});if(r.error)return toast('יצירת הקבוצה נכשלה');toast('הקבוצה נוצרה');renderCommunity('groups')}
+async function openGroup(id){var g=S.groups.find(function(x){return x.id===id});if(!g)return;var j=await sb.from('group_members').upsert({group_id:id,user_id:session.user.id,role:g.owner_id===session.user.id?'owner':'member'},{onConflict:'group_id,user_id'});if(j.error)return toast('לא ניתן להצטרף לקבוצה');S.group=g;await loadGroupMessages();renderGroup()}
+async function loadGroupMessages(){var r=await sb.from('group_messages').select('*').eq('group_id',S.group.id).order('created_at',{ascending:true}).limit(150);S.groupMessages=r.data||[]}
+function renderGroup(){mount(top(S.group.name,S.group.description||'שיחה קבוצתית')+'<button class="a3btn soft" data-a3-gback>← קבוצות</button><section class="a3card a3chat" style="margin-top:10px">'+(S.groupMessages.length?S.groupMessages.map(function(m){return '<div class="a3bubble '+(m.sender_id===session.user.id?'me':'them')+'">'+esc(m.body)+'</div>'}).join(''):'<div class="a3empty">עוד אין הודעות בקבוצה.</div>')+'<div class="a3compose"><input id="a3gm" placeholder="כתבו לקבוצה…"><button class="a3btn dark" data-a3-gsend>שלח</button></div></section>','community')}
+async function sendGroup(){var b=q('#a3gm').value.trim();if(!b)return;var r=await sb.from('group_messages').insert({group_id:S.group.id,sender_id:session.user.id,body:b});if(r.error)return toast('ההודעה לא נשלחה');await loadGroupMessages();renderGroup()}
+async function openChat(uid){var p=S.members.find(function(x){return x.id===uid});if(!p)return;var r=await sb.rpc('get_or_create_direct_conversation',{other_user:uid});if(r.error)return toast('לא ניתן לפתוח שיחה');S.chatUser=p;S.chatId=r.data;await loadMessages();renderChat();clearInterval(chatTimer);chatTimer=setInterval(async function(){if(!S.chatId)return;await loadMessages();if(q('#a3dm'))renderChat()},5000)}
+async function loadMessages(){var r=await sb.from('messages').select('*').eq('conversation_id',S.chatId).order('created_at',{ascending:true}).limit(150);S.messages=r.data||[]}
+function renderChat(){mount(top(S.chatUser.display_name||'צ׳אט',online(S.chatUser)?'מחובר/ת עכשיו':'שיחה פרטית')+'<button class="a3btn soft" data-a3-cback>← כל חברי הקהילה</button><section class="a3card a3chat" style="margin-top:10px">'+(S.messages.length?S.messages.map(function(m){return '<div class="a3bubble '+(m.sender_id===session.user.id?'me':'them')+'">'+esc(m.body)+'</div>'}).join(''):'<div class="a3empty">אפשר להתחיל את השיחה כאן.</div>')+'<div class="a3compose"><input id="a3dm" placeholder="כתבו הודעה…"><button class="a3btn dark" data-a3-send>שלח</button></div></section>','chats')}
+async function sendChat(){var b=q('#a3dm').value.trim();if(!b)return;var r=await sb.from('messages').insert({conversation_id:S.chatId,sender_id:session.user.id,body:b});if(r.error)return toast('ההודעה לא נשלחה');await loadMessages();renderChat()}
+async function renderChats(){if(!auth())return;await loadMembers();var on=S.members.filter(online);mount(top('שיחות','חברי הקהילה והמחוברים עכשיו')+'<section class="a3card"><b>מחוברים עכשיו</b>'+(on.length?on.map(person).join(''):'<div class="a3empty">אין כרגע משתמשים פעילים.</div>')+'</section><section class="a3card"><b>כל חברי הקהילה</b>'+(S.members.length?S.members.map(person).join(''):'<div class="a3empty">עוד אין חברי קהילה נוספים.</div>')+'</section>','chats')}
+async function heartbeat(active){if(!session)return;await sb.from('profiles').update({is_online:!!active,last_seen:new Date().toISOString()}).eq('id',session.user.id)}
+function bind(){if(window.__ANGEL_V3_BOUND)return;window.__ANGEL_V3_BOUND=true;document.addEventListener('click',function(ev){var t=ev.target.closest&&ev.target.closest('button');if(!t)return;if(t.matches('[data-a3-community]')){ev.preventDefault();ev.stopImmediatePropagation();renderCommunity('feed');return}if(t.matches('nav [data-id="me"]')){ev.preventDefault();ev.stopImmediatePropagation();renderProfile();return}if(t.matches('nav [data-id="chats"]')){ev.preventDefault();ev.stopImmediatePropagation();renderChats();return}if(t.matches('nav [data-id="home"]')){if(q('#a3mount')){ev.preventDefault();ev.stopImmediatePropagation();location.reload()}return}if(t.dataset.a3View){renderCommunity(t.dataset.a3View);return}if(t.hasAttribute('data-a3-save')){saveProfile();return}if(t.hasAttribute('data-a3-publish')){publish();return}if(t.dataset.a3Comment){comment(t.dataset.a3Comment);return}if(t.dataset.a3Connect){connect(t.dataset.a3Connect);return}if(t.dataset.a3Chat){openChat(t.dataset.a3Chat);return}if(t.hasAttribute('data-a3-create-group')){createGroup();return}if(t.dataset.a3Group){openGroup(t.dataset.a3Group);return}if(t.hasAttribute('data-a3-gback')){S.group=null;renderCommunity('groups');return}if(t.hasAttribute('data-a3-gsend')){sendGroup();return}if(t.hasAttribute('data-a3-cback')){clearInterval(chatTimer);S.chatId=null;renderChats();return}if(t.hasAttribute('data-a3-send')){sendChat();return}},true);document.addEventListener('change',function(ev){if(ev.target&&ev.target.id==='a3role'){var f=q('#a3ther');if(f)f.classList.toggle('a3hidden',ev.target.value!=='therapist')}});document.addEventListener('keydown',function(ev){if(ev.key==='Enter'&&ev.target&&ev.target.id==='a3dm'){ev.preventDefault();sendChat()}if(ev.key==='Enter'&&ev.target&&ev.target.id==='a3gm'){ev.preventDefault();sendGroup()}})}
+async function boot(){css();ensureNav();bind();var c=window.ANGEL_SUPABASE;if(!c)return setTimeout(boot,80);sb=window.AngelSupabaseClient||(window.AngelSupabaseClient=window.supabase.createClient(c.url,c.key));var r=await sb.auth.getSession();session=r.data.session;sb.auth.onAuthStateChange(async function(_e,s){session=s;if(session){await loadProfile();heartbeat(true)}else{S.profile=null}});if(session){await loadProfile();heartbeat(true);clearInterval(heartTimer);heartTimer=setInterval(function(){heartbeat(true)},45000)}document.addEventListener('visibilitychange',function(){heartbeat(!document.hidden)});window.addEventListener('pagehide',function(){heartbeat(false)});new MutationObserver(ensureNav).observe(document.body,{childList:true,subtree:true})}
+function start(){if(window.supabase)boot();else{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=boot;document.head.appendChild(s)}}
+start();
+})();
+</script>
+</body>
+</html>
