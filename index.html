@@ -3,31 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#28315E">
 <title>אנג'ל — המלאך השומר שלך</title>
-<style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#EDF0FA}#angelFrame{border:0;width:100%;height:100%;display:block}
-</style>
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#EDF0FA}#angelFrame{border:0;width:100%;height:100%;display:block}</style>
 </head>
 <body>
-<iframe id="angelFrame" src="app.html" title="אנג'ל"></iframe>
-<script>
-(function(){
-  var frame=document.getElementById('angelFrame');
-  frame.addEventListener('load',function(){
-    var w=frame.contentWindow,d=frame.contentDocument;
-    if(!w||!d)return;
-    var style=d.createElement('style');
-    style.textContent='.hero-chat-live{width:100%;min-height:50px;border-radius:16px;margin-top:10px;border:1px solid rgba(255,255,255,.24);color:#fff;background:rgba(255,255,255,.10);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700}.fc-overlay{position:fixed;inset:0;z-index:90;background:#EDF0FA;color:#1F2749;display:flex;flex-direction:column;font-family:Assistant,system-ui,sans-serif}.fc-head{background:#fff;border-bottom:1px solid #DDE2F2;padding:14px 16px;display:flex;align-items:center;gap:12px}.fc-back{width:42px;height:42px;border:0;border-radius:14px;background:#F2F4FB;font:inherit;font-weight:700}.fc-body{flex:1;overflow:auto;padding:16px}.fc-list{display:grid;gap:10px;margin-top:14px}.fc-user{width:100%;border:1px solid #DDE2F2;border-radius:18px;background:#fff;padding:14px;display:flex;align-items:center;gap:12px;text-align:right;font:inherit;color:#1F2749}.fc-av{width:46px;height:46px;border-radius:15px;background:#EEF1FB;display:grid;place-items:center;font-weight:700;flex:none}.fc-dot{width:9px;height:9px;border-radius:999px;background:#2FA37C;display:inline-block;margin-left:5px}.fc-msgs{display:flex;flex-direction:column;gap:10px}.fc-bub{max-width:82%;padding:10px 13px;border-radius:16px;font-size:15px;line-height:1.45}.fc-bub.me{align-self:flex-start;background:#1F2749;color:#fff}.fc-bub.them{align-self:flex-end;background:#fff;border:1px solid #DDE2F2}.fc-compose{background:#fff;border-top:1px solid #DDE2F2;padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px}.fc-compose input{flex:1;min-width:0;border:1px solid #DDE2F2;border-radius:16px;padding:12px 14px;font:inherit}.fc-compose button{width:58px;border:0;border-radius:16px;background:#FFC24D;color:#33270B;font:inherit;font-weight:700}';
-    d.head.appendChild(style);
-    var selected=null,messages={};
-    function esc(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-    function users(){return (w.ANGELS||[]).filter(function(p){return p.online})}
-    function inject(){var hero=d.querySelector('.hero');if(!hero||hero.querySelector('.hero-chat-live'))return;var b=d.createElement('button');b.className='hero-chat-live press';b.innerHTML='💬 צ׳אט חופשי עם מי שמחובר עכשיו';b.onclick=function(){selected=null;openChat()};hero.insertBefore(b,hero.querySelector('.note')||null)}
-    function openChat(){var old=d.getElementById('fcOverlay');if(old)old.remove();var root=d.createElement('div');root.id='fcOverlay';root.className='fc-overlay';if(!selected){var u=users();root.innerHTML='<div class="fc-head"><button class="fc-back" id="fcClose">‹</button><div><b style="font-size:20px">צ׳אט חופשי</b><div style="font-size:14px;color:#5A648C">'+u.length+' מחוברים עכשיו</div></div></div><div class="fc-body"><div style="font-size:14px;color:#5A648C">בחר/י מישהו ופשוט התחילו לדבר. בלי טופס ובלי שיחת טלפון.</div><div class="fc-list">'+u.map(function(p){return '<button class="fc-user" data-u="'+p.id+'"><span class="fc-av">'+esc(p.ini)+'</span><span style="flex:1"><b>'+esc(p.name)+'</b><span style="display:block;font-size:14px;color:#5A648C">'+esc(p.been)+'</span></span><span style="font-size:13px;color:#2FA37C"><i class="fc-dot"></i>מחובר/ת</span></button>'}).join('')+'</div></div>';d.body.appendChild(root);d.getElementById('fcClose').onclick=function(){root.remove()};root.querySelectorAll('[data-u]').forEach(function(btn){btn.onclick=function(){selected=+btn.getAttribute('data-u');openChat()}});return}var p=(w.ANGELS||[]).filter(function(x){return x.id===selected})[0];if(!p){selected=null;openChat();return}if(!messages[selected])messages[selected]=[{from:'them',text:'היי, אני כאן. אפשר לדבר חופשי.'}];root.innerHTML='<div class="fc-head"><button class="fc-back" id="fcList">‹</button><span class="fc-av" style="width:42px;height:42px">'+esc(p.ini)+'</span><div><b>'+esc(p.name)+'</b><div style="font-size:14px;color:#2FA37C">מחובר/ת עכשיו</div></div></div><div class="fc-body"><div class="fc-msgs">'+messages[selected].map(function(m){return '<div class="fc-bub '+(m.from==='me'?'me':'them')+'">'+esc(m.text)+'</div>'}).join('')+'</div></div><div class="fc-compose"><input id="fcInput" placeholder="כתבו משהו…" autocomplete="off"><button id="fcSend">שלח</button></div>';d.body.appendChild(root);d.getElementById('fcList').onclick=function(){selected=null;openChat()};function send(){var i=d.getElementById('fcInput'),t=i.value.trim();if(!t)return;messages[selected].push({from:'me',text:t});openChat();setTimeout(function(){var x=d.getElementById('fcInput');if(x)x.focus()},0)}d.getElementById('fcSend').onclick=send;d.getElementById('fcInput').addEventListener('keydown',function(e){if(e.key==='Enter')send()});d.getElementById('fcInput').focus()}
-    new MutationObserver(inject).observe(d.documentElement,{childList:true,subtree:true});
-    inject();
-  });
-})();
-</script>
+<iframe id="angelFrame" src="app.html?v=20260820-2215" title="אנג'ל" allow="clipboard-write"></iframe>
 </body>
 </html>
