@@ -1,0 +1,98 @@
+name: Fix groups and add voice calls
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-groups-add-calls.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Angel social UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('social-v2.js')
+          s=p.read_text(encoding='utf-8')
+
+          s=s.replace("var sb=null,session=null,heartTimer=null,chatTimer=null,lastHeartbeat=0,homeHTML=null;",
+          "var sb=null,session=null,heartTimer=null,chatTimer=null,lastHeartbeat=0,homeHTML=null,callPoll=null,callSignalTimer=null,callStatusTimer=null,pc=null,localStream=null,activeCall=null,lastSignalId=0,pendingIce=[];")
+
+          # Avoid collision with the legacy .full class in app.html.
+          s=s.replace('.a3btn.full{', '.a3btn.a3full{')
+          s=s.replace('a3btn dark full', 'a3btn dark a3full')
+          s=s.replace('a3btn gold full', 'a3btn gold a3full')
+          s=s.replace('a3btn soft full', 'a3btn soft a3full')
+
+          # Extra voice-call UI CSS.
+          marker=".a3hidden{display:none!important}nav button[data-a3-community]"
+          callcss=".a3callov{position:fixed;inset:0;z-index:900;background:linear-gradient(170deg,#28315e,#4c4a90);color:#fff;display:flex;align-items:center;justify-content:center;padding:24px}.a3callbox{width:100%;max-width:410px;text-align:center}.a3callavatar{width:96px;height:96px;border-radius:32px;background:rgba(255,255,255,.14);display:grid;place-items:center;font-size:36px;font-weight:800;margin:0 auto 16px}.a3callactions{display:flex;justify-content:center;gap:12px;margin-top:24px}.a3callbtn{min-width:72px;height:56px;border-radius:18px;background:rgba(255,255,255,.14);color:#fff;font-weight:800}.a3callbtn.accept{background:#2fa37c}.a3callbtn.end{background:#ee6e8c}.a3hidden{display:none!important}nav button[data-a3-community]"
+          if marker in s:
+              s=s.replace(marker,callcss)
+
+          old_person="function person(p){var mine=S.connections.indexOf(p.id)>=0;return '<div class=\"a3person\">'+avatar(p)+'<div class=\"a3grow\"><div class=\"a3name\">'+esc(p.is_anonymous?'חבר/ת קהילה':p.display_name||'חבר/ת קהילה')+' '+(p.role==='therapist'?'<span class=\"a3therapist\">מטפל/ת</span>':'')+'</div><div class=\"a3meta\">'+esc((p.topics||[]).slice(0,3).join(' · '))+'</div>'+(online(p)?'<div class=\"a3online\"><span class=\"a3dot\"></span>מחובר/ת עכשיו</div>':'')+'<div class=\"a3actions\"><button class=\"a3btn gold\" data-a3-chat=\"'+p.id+'\">צ׳אט</button><button class=\"a3btn soft\" data-a3-connect=\"'+p.id+'\">'+(mine?'✓ בקהילה שלי':'הוסף לקהילה')+'</button></div></div></div>'}"
+          new_person="function person(p){var mine=S.connections.indexOf(p.id)>=0;return '<div class=\"a3person\">'+avatar(p)+'<div class=\"a3grow\"><div class=\"a3name\">'+esc(p.is_anonymous?'חבר/ת קהילה':p.display_name||'חבר/ת קהילה')+' '+(p.role==='therapist'?'<span class=\"a3therapist\">מטפל/ת</span>':'')+'</div><div class=\"a3meta\">'+esc((p.topics||[]).slice(0,3).join(' · '))+'</div>'+(online(p)?'<div class=\"a3online\"><span class=\"a3dot\"></span>מחובר/ת עכשיו</div>':'')+'<div class=\"a3actions\"><button class=\"a3btn gold\" data-a3-chat=\"'+p.id+'\">צ׳אט</button>'+(mine?'<button class=\"a3btn dark\" data-a3-call=\"'+p.id+'\">📞 צלצול</button>':'')+'<button class=\"a3btn soft\" data-a3-connect=\"'+p.id+'\">'+(mine?'✓ באנשי הקשר שלי':'הוסף לאנשי הקשר')+'</button></div></div></div>'}"
+          if old_person not in s:
+              raise SystemExit('person function not found')
+          s=s.replace(old_person,new_person)
+          s=s.replace('<section class="a3card"><b>הקהילה שלי</b>', '<section class="a3card"><b>אנשי הקשר שלי</b>')
+          s=s.replace('עדיין לא הוספת חברים.', 'עדיין לא הוספת אנשי קשר.')
+
+          old_group="async function createGroup(){var n=q('#a3gname').value.trim();if(!n)return toast('צריך שם לקבוצה');var r=await sb.rpc('create_group_with_owner',{p_name:n,p_description:q('#a3gdesc').value.trim(),p_topic:q('#a3gtopic').value.trim()||null,p_private:false});if(r.error)return toast('יצירת הקבוצה נכשלה');toast('הקבוצה נוצרה');renderCommunity('groups')}"
+          new_group="async function createGroup(){var n=q('#a3gname').value.trim(),d=q('#a3gdesc').value.trim(),t=q('#a3gtopic').value.trim()||null,btn=q('[data-a3-create-group]');if(!n)return toast('צריך שם לקבוצה');if(btn){btn.disabled=true;btn.textContent='יוצר קבוצה…'}try{var r=await sb.rpc('create_group_with_owner',{p_name:n,p_description:d,p_topic:t,p_private:false});if(r.error)throw r.error;await loadGroups();var g=S.groups.find(function(x){return x.id===r.data});if(!g)throw new Error('הקבוצה נוצרה אך לא נטענה');toast('הקבוצה נוצרה ✓');S.group=g;await loadGroupMessages();renderGroup()}catch(e){toast('יצירת הקבוצה נכשלה: '+(e.message||'נסה שוב'));if(btn){btn.disabled=false;btn.textContent='יצירת קבוצה'}}}"
+          if old_group not in s:
+              raise SystemExit('createGroup function not found')
+          s=s.replace(old_group,new_group)
+
+          # Voice call implementation: Supabase signaling + WebRTC audio.
+          insert_before='async function openChat(uid)'
+          call_code=r'''function callUI(title,sub,buttons){var old=q('#a3call');if(old)old.remove();var d=document.createElement('div');d.id='a3call';d.className='a3callov';d.innerHTML='<div class="a3callbox"><div class="a3callavatar">📞</div><h2 style="margin:0 0 8px">'+esc(title)+'</h2><div style="opacity:.78">'+esc(sub||'')+'</div><div class="a3callactions">'+buttons+'</div><audio id="a3remoteaudio" autoplay playsinline></audio></div>';document.body.appendChild(d)}
+function stopCallLocal(){clearInterval(callSignalTimer);clearInterval(callStatusTimer);callSignalTimer=null;callStatusTimer=null;if(pc){try{pc.close()}catch(e){}pc=null}if(localStream){localStream.getTracks().forEach(function(t){t.stop()});localStream=null}pendingIce=[];lastSignalId=0;var x=q('#a3call');if(x)x.remove();activeCall=null}
+async function finishCall(status){var c=activeCall;if(c)await sb.from('call_sessions').update({status:status||'ended',updated_at:new Date().toISOString()}).eq('id',c.id);stopCallLocal()}
+async function addSignal(kind,payload){if(!activeCall)return;await sb.from('call_signals').insert({call_id:activeCall.id,sender_id:session.user.id,kind:kind,payload:payload})}
+async function makePeer(initiator){localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});localStream.getTracks().forEach(function(t){pc.addTrack(t,localStream)});pc.ontrack=function(ev){var a=q('#a3remoteaudio');if(a){a.srcObject=ev.streams[0];a.play().catch(function(){})}};pc.onicecandidate=function(ev){if(ev.candidate)addSignal('ice',ev.candidate.toJSON?ev.candidate.toJSON():ev.candidate)};pc.onconnectionstatechange=function(){if(!pc)return;if(pc.connectionState==='connected'){var b=q('#a3callstatus');if(b)b.textContent='מחוברים ✓'}if(['failed','disconnected','closed'].indexOf(pc.connectionState)>=0&&activeCall)finishCall('ended')};if(initiator){var offer=await pc.createOffer({offerToReceiveAudio:true});await pc.setLocalDescription(offer);await addSignal('offer',{type:offer.type,sdp:offer.sdp})}}
+async function pollSignals(){if(!activeCall||!pc)return;var r=await sb.from('call_signals').select('id,sender_id,kind,payload').eq('call_id',activeCall.id).gt('id',lastSignalId).order('id',{ascending:true});if(r.error)return;for(var i=0;i<(r.data||[]).length;i++){var x=r.data[i];lastSignalId=Math.max(lastSignalId,x.id);if(x.sender_id===session.user.id)continue;try{if(x.kind==='offer'&&!pc.remoteDescription){await pc.setRemoteDescription(new RTCSessionDescription(x.payload));var ans=await pc.createAnswer();await pc.setLocalDescription(ans);await addSignal('answer',{type:ans.type,sdp:ans.sdp});while(pendingIce.length)await pc.addIceCandidate(pendingIce.shift())}else if(x.kind==='answer'&&!pc.remoteDescription){await pc.setRemoteDescription(new RTCSessionDescription(x.payload));while(pendingIce.length)await pc.addIceCandidate(pendingIce.shift())}else if(x.kind==='ice'){var ice=new RTCIceCandidate(x.payload);if(pc.remoteDescription)await pc.addIceCandidate(ice);else pendingIce.push(ice)}}catch(e){console.warn('Angel call signal',e)}}}
+function startSignalPolling(){clearInterval(callSignalTimer);callSignalTimer=setInterval(pollSignals,800);pollSignals()}
+async function startCall(uid){if(S.connections.indexOf(uid)<0)return toast('אפשר לצלצל רק לאיש קשר');var p=S.members.find(function(x){return x.id===uid});if(!p)return;try{var r=await sb.from('call_sessions').insert({caller_id:session.user.id,callee_id:uid,status:'ringing'}).select('*').single();if(r.error)throw r.error;activeCall=r.data;callUI(p.display_name||'שיחת קול','מצלצל…','<button class="a3callbtn end" data-a3-hangup>ניתוק</button>');var st=q('#a3call .a3callbox div:nth-of-type(2)');if(st)st.id='a3callstatus';await makePeer(true);startSignalPolling();clearInterval(callStatusTimer);callStatusTimer=setInterval(async function(){if(!activeCall)return;var z=await sb.from('call_sessions').select('status').eq('id',activeCall.id).single();if(z.data&&z.data.status==='accepted'){var e=q('#a3callstatus');if(e)e.textContent='השיחה מתחברת…'}if(z.data&&['declined','ended'].indexOf(z.data.status)>=0){toast(z.data.status==='declined'?'השיחה נדחתה':'השיחה הסתיימה');stopCallLocal()}},1000)}catch(e){stopCallLocal();toast(e.name==='NotAllowedError'?'צריך לאשר גישה למיקרופון':'לא ניתן להתחיל שיחה: '+(e.message||''))}}
+async function acceptCall(){if(!activeCall)return;try{await sb.from('call_sessions').update({status:'accepted',updated_at:new Date().toISOString()}).eq('id',activeCall.id);var p=S.members.find(function(x){return x.id===activeCall.caller_id});callUI(p&&p.display_name||'שיחת קול','מתחבר…','<button class="a3callbtn end" data-a3-hangup>ניתוק</button>');var st=q('#a3call .a3callbox div:nth-of-type(2)');if(st)st.id='a3callstatus';await makePeer(false);startSignalPolling()}catch(e){stopCallLocal();toast(e.name==='NotAllowedError'?'צריך לאשר גישה למיקרופון':'לא ניתן לענות לשיחה')}}
+async function declineCall(){if(!activeCall)return;await finishCall('declined')}
+async function checkIncomingCall(){if(!session||activeCall||q('#a3call'))return;var r=await sb.from('call_sessions').select('*').eq('callee_id',session.user.id).eq('status','ringing').order('created_at',{ascending:false}).limit(1).maybeSingle();if(!r.data)return;activeCall=r.data;await loadMembers();var p=S.members.find(function(x){return x.id===activeCall.caller_id});callUI(p&&p.display_name||'איש קשר','שיחת קול נכנסת','<button class="a3callbtn accept" data-a3-accept-call>ענה</button><button class="a3callbtn end" data-a3-decline-call>דחה</button>')}
+'''
+          if insert_before not in s:
+              raise SystemExit('openChat marker not found')
+          s=s.replace(insert_before,call_code+insert_before)
+
+          # Add call event handlers.
+          needle="if(t.dataset.a3Chat){openChat(t.dataset.a3Chat);return}"
+          repl=needle+"if(t.dataset.a3Call){startCall(t.dataset.a3Call);return}if(t.hasAttribute('data-a3-accept-call')){acceptCall();return}if(t.hasAttribute('data-a3-decline-call')){declineCall();return}if(t.hasAttribute('data-a3-hangup')){finishCall('ended');return}"
+          if needle not in s:
+              raise SystemExit('chat handler marker not found')
+          s=s.replace(needle,repl)
+
+          # Start incoming call polling once authenticated.
+          bootneedle="if(session){await loadProfile();heartbeat(true);clearInterval(heartTimer);heartTimer=setInterval(function(){heartbeat(true)},60000)}"
+          bootrepl="if(session){await loadProfile();heartbeat(true);clearInterval(heartTimer);heartTimer=setInterval(function(){heartbeat(true)},60000);clearInterval(callPoll);callPoll=setInterval(checkIncomingCall,2500);setTimeout(checkIncomingCall,800)}"
+          if bootneedle not in s:
+              raise SystemExit('boot marker not found')
+          s=s.replace(bootneedle,bootrepl)
+
+          p.write_text(s,encoding='utf-8')
+
+          # Bust cache in app and index.
+          app=Path('app.html')
+          a=app.read_text(encoding='utf-8').replace('social-v2.js?v=20260821-1118','social-v2.js?v=20260821-1132')
+          app.write_text(a,encoding='utf-8')
+          idx=Path('index.html')
+          z=idx.read_text(encoding='utf-8').replace('20260821-1118','20260821-1132')
+          idx.write_text(z,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social-v2.js app.html index.html
+          git commit -m "Fix group creation UI and add contact voice calls"
+          git push
+          git rm .github/workflows/fix-groups-add-calls.yml
+          git commit -m "Remove one-time Angel patch workflow"
+          git push
