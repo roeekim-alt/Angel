@@ -1,0 +1,47 @@
+name: Angel stability hotfix
+on:
+  push:
+    paths:
+      - '.github/workflows/angel-stability-hotfix.yml'
+permissions:
+  contents: write
+jobs:
+  hotfix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch navigation chat heartbeat and cache
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('social-v2.js')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("var sb=null,session=null,heartTimer=null,chatTimer=null;", "var sb=null,session=null,heartTimer=null,chatTimer=null,lastHeartbeat=0,homeHTML=null;")
+          s=s.replace("async function heartbeat(active){if(!session)return;await sb.from('profiles').update({is_online:!!active,last_seen:new Date().toISOString()}).eq('id',session.user.id)}", "async function heartbeat(active,force){if(!session)return;var now=Date.now();if(!force&&active&&now-lastHeartbeat<30000)return;lastHeartbeat=now;await sb.from('profiles').update({is_online:!!active,last_seen:new Date().toISOString()}).eq('id',session.user.id)}")
+          s=s.replace("if(t.matches('nav [data-id=\"home\"]')){if(q('#a3mount')){ev.preventDefault();ev.stopImmediatePropagation();location.reload()}return}", "if(t.matches('nav [data-id=\"home\"]')){if(q('#a3mount')&&homeHTML){ev.preventDefault();ev.stopImmediatePropagation();clearInterval(chatTimer);S.chatId=null;S.chatUser=null;q('#a3mount').outerHTML=homeHTML;ensureNav();mark('home')}return}")
+          old="chatTimer=setInterval(async function(){if(!S.chatId)return;await loadMessages();if(q('#a3dm'))renderChat()},5000)"
+          new="chatTimer=setInterval(async function(){if(!S.chatId)return;var before=S.messages.length?S.messages[S.messages.length-1].id:null;var draft=q('#a3dm')?q('#a3dm').value:'';await loadMessages();var after=S.messages.length?S.messages[S.messages.length-1].id:null;if(before!==after&&q('#a3dm')){renderChat();if(q('#a3dm'))q('#a3dm').value=draft}},5000)"
+          s=s.replace(old,new)
+          s=s.replace("async function boot(){css();ensureNav();bind();var c=window.ANGEL_SUPABASE;", "async function boot(){css();ensureNav();bind();if(!homeHTML){var hm=q('main.wrap');if(hm)homeHTML=hm.outerHTML}var c=window.ANGEL_SUPABASE;")
+          s=s.replace("heartbeat(true)}else{S.profile=null}", "heartbeat(true,true)}else{S.profile=null}")
+          s=s.replace("heartbeat(true);clearInterval(heartTimer)", "heartbeat(true,true);clearInterval(heartTimer)")
+          s=s.replace("heartbeat(!document.hidden)});window.addEventListener('pagehide',function(){heartbeat(false)})", "heartbeat(!document.hidden,true)});window.addEventListener('pagehide',function(){heartbeat(false,true)})")
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('app.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('supabase-backend.js?v=20260820-2231','supabase-backend.js?v=20260821-1118')
+          s=s.replace('social-v2.js?v=20260820-2230','social-v2.js?v=20260821-1118')
+          p.write_text(s,encoding='utf-8')
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8').replace('app.html?v=20260820-2230','app.html?v=20260821-1118')
+          p.write_text(s,encoding='utf-8')
+          PY
+          rm -f .github/workflows/angel-stability-hotfix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add social-v2.js app.html index.html .github/workflows/angel-stability-hotfix.yml
+          git commit -m "Fix Angel navigation chat refresh and heartbeat"
+          git push
