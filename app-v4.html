@@ -4,7 +4,7 @@
 <body style="margin:0;background:#F7F4EE;color:#102A4C;font-family:system-ui;text-align:center;padding:40px">טוען את אנג׳ל…
 <script>
 (function(){
-var V='20260907-2355';
+var V='20260907-2359';
 fetch('app.html?v='+V).then(function(r){if(!r.ok)throw new Error('app '+r.status);return r.text()}).then(function(h){
   h=h.replace(/social-v2\.js\?v=[^"']+/g,'social-v2.js?v='+V);
   h=h.replace(/supabase-backend\.js\?v=[^"']+/g,'supabase-backend.js?v='+V);
