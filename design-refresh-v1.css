@@ -1,0 +1,62 @@
+/* Angel 2026 calm visual system — inspired by the supplied reference */
+:root{
+  --bg:#F7F4EE!important;
+  --surface:#FFFEFC!important;
+  --ink:#102A4C!important;
+  --ink-soft:#78839A!important;
+  --line:#E8E5DF!important;
+  --halo:#F4BE4D!important;
+  --grass:#63B79B!important;
+  --rose:#E79A96!important;
+  --lilac:#A9A4DC!important;
+  --blue:#86B7E7!important;
+  --night:linear-gradient(160deg,#E4F1FB 0%,#F8E7D8 58%,#F4D9BB 100%)!important;
+}
+html{background:#F7F4EE}
+body{background:#F7F4EE!important;color:#102A4C!important;font-family:'Assistant',system-ui,-apple-system,sans-serif!important}
+.wrap,#a4mount{max-width:470px!important;padding-left:16px!important;padding-right:16px!important}
+.top{padding-top:18px!important}.top h1,.a4top h1,.twtop h1{color:#102A4C!important;letter-spacing:-.02em}.muted,.a4sub,.a4meta,.twmeta{color:#78839A!important}
+
+/* HOME HERO */
+.hero{position:relative;overflow:hidden;background:linear-gradient(155deg,#DCEFFA 0%,#F9ECE1 55%,#F3D3AE 100%)!important;color:#102A4C!important;border-radius:30px!important;padding:22px!important;box-shadow:0 12px 36px rgba(68,79,105,.08)!important;border:1px solid rgba(255,255,255,.7)}
+.hero:before{content:"";position:absolute;width:156px;height:156px;border-radius:50%;left:-42px;bottom:-55px;background:radial-gradient(circle at 50% 50%,#F9D876 0 34%,rgba(249,216,118,.26) 35% 58%,transparent 59%)}
+.hero:after{content:"";position:absolute;width:260px;height:110px;right:-70px;bottom:-52px;border-radius:50% 50% 0 0;background:linear-gradient(155deg,#7298B8,#B0BFC8);opacity:.20;transform:rotate(-6deg)}
+.hero>*{position:relative;z-index:1}.hero h2{color:#102A4C!important;font-size:30px!important;line-height:1.15!important;margin-top:8px!important}.hero .count{color:#87651E!important}.hero #ticker{color:#66738A!important}.hero .angel-vision{color:#52647B!important;font-size:14px!important;line-height:1.65!important}.hero .note,.angel-mode-note{color:#6E7890!important}
+.hero .cta{background:#12345A!important;color:#fff!important;box-shadow:0 10px 22px rgba(18,52,90,.18)!important;border-radius:18px!important}
+.hero .angel-freechat{background:rgba(255,255,255,.82)!important;color:#12345A!important;border:1px solid rgba(16,42,76,.08)!important;box-shadow:0 6px 16px rgba(43,65,93,.08)!important}
+.halos{opacity:.55}.halos i{border-color:rgba(16,42,76,.10)!important}.halos i.lit{border-color:#F4BE4D!important}
+
+/* QUICK TOOLS */
+.angel-quick-tools{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0 4px}.angel-quick-tool{min-height:82px;border:0!important;border-radius:18px!important;padding:10px 4px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:700!important;font-size:13px!important;color:#173558!important;box-shadow:0 5px 16px rgba(42,55,83,.05)}.angel-quick-tool span:first-child{font-size:23px}.angel-quick-tool:nth-child(1){background:#DFF0FA!important}.angel-quick-tool:nth-child(2){background:#DFF2EB!important}.angel-quick-tool:nth-child(3){background:#F8E4DE!important}.angel-quick-tool:nth-child(4){background:#ECE8FA!important}
+
+/* CARDS */
+.card,.a4card,.twcard,.twwallpost{background:#FFFEFC!important;border:1px solid #E9E6E0!important;border-radius:22px!important;box-shadow:0 7px 24px rgba(38,51,76,.055)!important}.card{padding:17px!important}.a4person{border-bottom-color:#EEEAE4!important}.a4avatar,.twavatar{background:#EEF2F4!important;border-radius:20px!important}.a4tag,.chip,.a4therapist{border-radius:999px!important}.a4therapist{background:#EAE8FA!important;color:#625C9B!important}.twverified{background:#E1F3EC!important;color:#2D795F!important}
+.btn-dark,.a4btn.dark,.twbtn.dark{background:#12345A!important;color:#fff!important;border-radius:14px!important}.a4btn.gold,.twbtn.gold{background:#F3C65E!important;color:#42320B!important}.btn-icon,.a4btn.soft,.twbtn{background:#F3F2EF!important;color:#173558!important}
+.filters button{background:#FFFEFC!important;border-color:#E5E2DC!important;color:#748097!important}.filters button[aria-pressed="true"]{background:#12345A!important;color:white!important;border-color:#12345A!important}
+
+/* FORMS / JOURNAL FEEL */
+.a4form input,.a4form textarea,.a4form select,.twform input,.twform textarea,.a4composer textarea,.a4compose input,.a4row input{background:#FAF9F6!important;border-color:#E7E4DE!important;border-radius:15px!important;color:#173558!important}.a4composer textarea{min-height:96px!important}
+
+/* CHAT */
+.a4chat{background:#FFFEFC!important}.a4bubble.me{background:#12345A!important;color:#fff!important;border-radius:18px 18px 5px 18px!important}.a4bubble.them{background:#F0F1F3!important;color:#173558!important;border-radius:18px 18px 18px 5px!important}
+.fcbar{background:linear-gradient(135deg,#E5F1F6,#EEF5F1)!important;border-color:#DDE8E5!important;color:#173558!important}.fcpanel{background:#FFFEFC!important;border-color:#E8E5DF!important}
+
+/* THERAPISTS & WALL */
+.twhero{background:linear-gradient(180deg,#FFFEFC,#FAF8F3)!important}.twstatus{background:#F4F3EF!important}.twadmin{border-color:#F1C85B!important}
+
+/* NAVIGATION */
+nav{max-width:470px!important;background:rgba(255,254,252,.96)!important;border-top:1px solid #E7E4DF!important;box-shadow:0 -10px 30px rgba(32,46,70,.07)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding-top:8px!important}nav button{color:#9AA3B4!important;font-size:11px!important}nav button[aria-current="true"],nav button.a4current{color:#12345A!important;font-weight:800!important}
+
+/* NOTIFICATIONS */
+.anbtn{background:#FFFEFC!important;border-color:#E8E5DF!important;color:#12345A!important}.anpanel{background:#FFFEFC!important;border-color:#E8E5DF!important}.anitem{background:#F6F4F0!important;border:1px solid #ECE8E2!important}
+
+/* SHEETS / DIALOGS */
+.sheet,.angel-choice{background:#FFFEFC!important;color:#173558!important}.opt,.box,.line-item{background:#F8F7F4!important;border-color:#E8E5DF!important}.big.dark,.angel-choice .identified{background:#12345A!important}.angel-choice .anonymous{background:#F6E9C8!important;color:#654D16!important}
+
+/* SOS retains urgency without dominating */
+.sos{background:#FBE8E5!important;color:#A44B52!important}
+
+/* Legal footer */
+.angel-legal{color:#8C94A5!important}
+
+@media(max-width:370px){.angel-quick-tools{gap:6px}.angel-quick-tool{font-size:11px;min-height:76px}.hero h2{font-size:27px!important}}
