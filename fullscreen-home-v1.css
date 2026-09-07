@@ -1,0 +1,138 @@
+/* Angel full-screen opening hero — 2026-09-07 */
+
+/* The home header currently wastes the first screen. The hero becomes the opening screen. */
+.wrap > .top:first-child{display:none!important}
+
+/* Keep the content column for the rest of the app, but let the first hero bleed edge-to-edge. */
+.wrap{padding-top:0!important}
+.wrap > .hero:first-of-type{
+  width:calc(100% + 32px)!important;
+  margin-inline:-16px!important;
+  margin-top:0!important;
+  border-radius:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  min-height:calc(100svh - 72px - env(safe-area-inset-bottom))!important;
+  padding:calc(26px + env(safe-area-inset-top)) 24px 30px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-end!important;
+  align-items:stretch!important;
+  text-align:right!important;
+  background-color:#101d31!important;
+}
+
+/* The photograph supplied by Roi is already mounted by light-at-end-v1.css. Make it behave like a real cover image. */
+.wrap > .hero:first-of-type::before{
+  inset:0!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:0!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  opacity:1!important;
+}
+
+/* A cinematic contrast layer instead of a small dark card. */
+.wrap > .hero:first-of-type::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:0!important;
+  transform:none!important;
+  opacity:1!important;
+  z-index:-1!important;
+  background:linear-gradient(180deg,rgba(5,14,30,.05) 0%,rgba(5,14,30,.10) 30%,rgba(5,14,30,.58) 67%,rgba(5,14,30,.92) 100%)!important;
+}
+
+.wrap > .hero:first-of-type > *{position:relative!important;z-index:2!important}
+.wrap > .hero:first-of-type .halos{display:none!important}
+.wrap > .hero:first-of-type .count{
+  align-self:flex-start!important;
+  margin:0 0 auto!important;
+  color:#fff!important;
+  background:rgba(8,21,42,.38)!important;
+  border:1px solid rgba(255,255,255,.22)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  padding:9px 13px!important;
+  border-radius:999px!important;
+  font-size:13px!important;
+}
+.wrap > .hero:first-of-type .count b{color:#ffd86f!important}
+
+.wrap > .hero:first-of-type h2{
+  color:#fff!important;
+  font-size:clamp(34px,9vw,48px)!important;
+  line-height:1.02!important;
+  letter-spacing:-.035em!important;
+  margin:0 0 10px!important;
+  max-width:360px!important;
+  text-shadow:0 2px 22px rgba(0,0,0,.30)!important;
+}
+.wrap > .hero:first-of-type h2::after{
+  content:"האור בקצה המנהרה";
+  display:block;
+  color:#ffd86f;
+  font-family:'Assistant',system-ui,sans-serif;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:0;
+  margin-top:10px;
+}
+
+.wrap > .hero:first-of-type #ticker{display:none!important}
+.wrap > .hero:first-of-type .angel-vision{
+  color:rgba(255,255,255,.92)!important;
+  font-size:15px!important;
+  line-height:1.65!important;
+  margin:0 0 18px!important;
+  max-width:380px!important;
+  text-shadow:0 1px 8px rgba(0,0,0,.22)!important;
+}
+.wrap > .hero:first-of-type .angel-mode-note{
+  color:rgba(255,255,255,.76)!important;
+  margin:0 0 8px!important;
+}
+
+.wrap > .hero:first-of-type .angel-freechat,
+.wrap > .hero:first-of-type .cta{
+  min-height:56px!important;
+  border-radius:18px!important;
+  font-size:17px!important;
+  font-weight:800!important;
+}
+.wrap > .hero:first-of-type .angel-freechat{
+  background:rgba(255,255,255,.15)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.38)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  box-shadow:none!important;
+  margin-bottom:10px!important;
+}
+.wrap > .hero:first-of-type .cta{
+  background:#123f73!important;
+  color:#fff!important;
+  box-shadow:0 12px 28px rgba(3,16,36,.30)!important;
+}
+.wrap > .hero:first-of-type .note{
+  color:rgba(255,255,255,.74)!important;
+  margin-bottom:0!important;
+}
+
+/* The rest of the product starts only after the emotional opening screen. */
+.wrap > .hero:first-of-type + .angel-quick-tools,
+.wrap > .hero:first-of-type ~ .filters{margin-top:18px!important}
+
+/* Keep bottom navigation readable over the opening photograph. */
+nav{z-index:300!important}
+
+@media(max-width:380px){
+  .wrap > .hero:first-of-type{padding-inline:18px!important}
+  .wrap > .hero:first-of-type h2{font-size:34px!important}
+  .wrap > .hero:first-of-type .angel-vision{font-size:14px!important}
+}
