@@ -1,7 +1,39 @@
 /* Angel full-screen opening hero — text directly on sunrise */
 html,body{color-scheme:light!important;background:#F7F4EE!important}
-.wrap > .top:first-child{display:none!important}
-.wrap{padding-top:0!important}
+
+/* Keep the legacy emergency action, but only surface its SOS button over the hero. */
+.wrap{padding-top:0!important;position:relative!important}
+.wrap > .top:first-child{
+  display:flex!important;
+  position:absolute!important;
+  top:calc(12px + env(safe-area-inset-top))!important;
+  right:16px!important;
+  left:16px!important;
+  z-index:220!important;
+  padding:0!important;
+  margin:0!important;
+  justify-content:flex-end!important;
+  pointer-events:none!important;
+}
+.wrap > .top:first-child > div{display:none!important}
+.wrap > .top:first-child .sos{
+  display:inline-flex!important;
+  pointer-events:auto!important;
+  min-height:46px!important;
+  padding:0 15px!important;
+  border-radius:999px!important;
+  background:rgba(255,245,246,.94)!important;
+  color:#A9364D!important;
+  border:1px solid rgba(190,58,90,.18)!important;
+  box-shadow:0 8px 24px rgba(66,25,36,.16)!important;
+  backdrop-filter:blur(10px)!important;
+  -webkit-backdrop-filter:blur(10px)!important;
+  font-size:14px!important;
+  font-weight:800!important;
+}
+.wrap > .top:first-child .sos:active{transform:scale(.97)!important}
+.wrap > .top:first-child .sos:focus-visible{outline:3px solid #fff!important;outline-offset:2px!important}
+
 .wrap > .hero:first-of-type{
   width:calc(100% + 32px)!important;
   margin-inline:-16px!important;
@@ -125,6 +157,8 @@ html,body{color-scheme:light!important;background:#F7F4EE!important}
 nav{z-index:300!important;background:rgba(255,254,250,.97)!important;color-scheme:light!important}
 .card,.a4card,.twcard,.twwallpost,.learn-card{background:#FFFEFC!important;color:#102A4C!important}
 @media(max-width:380px){
+  .wrap > .top:first-child{right:12px!important;left:12px!important}
+  .wrap > .top:first-child .sos{min-height:44px!important;padding:0 13px!important;font-size:13px!important}
   .wrap > .hero:first-of-type{padding-inline:16px!important}
   .wrap > .hero:first-of-type h2{font-size:34px!important}
   .wrap > .hero:first-of-type .angel-vision{font-size:14px!important}
