@@ -1,0 +1,11 @@
+/* Angel — clean personal profile */
+#a4role,
+#a4ther{
+  display:none!important;
+}
+.a4form label:has(+ #a4role){
+  display:none!important;
+}
+#twApplicationBox{
+  display:none!important;
+}
