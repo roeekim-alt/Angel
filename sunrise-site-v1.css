@@ -1,0 +1,127 @@
+/* Angel full-app sunrise canvas */
+:root{
+  --sunrise-glass:rgba(255,255,255,.76);
+  --sunrise-glass-strong:rgba(255,255,255,.88);
+  --sunrise-line:rgba(255,255,255,.50);
+  --sunrise-shadow:0 12px 32px rgba(18,43,72,.14);
+}
+html{background:#F7DDAA!important;min-height:100%;}
+body{
+  min-height:100svh!important;
+  background:linear-gradient(180deg,#DCEAF3 0%,#F7D98E 48%,#E6B56F 100%)!important;
+  color:#102A4C!important;
+  position:relative!important;
+}
+#angelSunriseBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  background:linear-gradient(180deg,#DCEAF3,#F5D488 55%,#D99E5D);
+}
+#angelSunriseBackdrop::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:8;
+  background:linear-gradient(180deg,rgba(7,21,39,.02) 0%,rgba(7,21,39,.01) 35%,rgba(7,21,39,.08) 70%,rgba(7,21,39,.16) 100%);
+}
+.angel-sunrise-slide{
+  position:absolute;
+  inset:-3%;
+  opacity:0;
+  background-repeat:no-repeat;
+  background-size:cover;
+  transition:opacity 1.8s ease,transform 10s ease,filter 1.8s ease;
+  will-change:opacity,transform;
+}
+.angel-sunrise-slide.is-active{opacity:1;transform:scale(1.015)}
+.angel-sunrise-slide[data-scene="0"]{background-position:50% 46%;filter:saturate(1.05) brightness(1.04) contrast(.98)}
+.angel-sunrise-slide[data-scene="1"]{background-position:43% 42%;filter:saturate(1.13) brightness(1.07) contrast(.96) sepia(.04);transform:scale(1.055)}
+.angel-sunrise-slide[data-scene="2"]{background-position:58% 50%;filter:saturate(.98) brightness(1.03) contrast(1.02) hue-rotate(-3deg);transform:scale(1.04)}
+.angel-sunrise-slide[data-scene="3"]{background-position:50% 55%;filter:saturate(1.08) brightness(.99) contrast(1.03) sepia(.03);transform:scale(1.065)}
+
+/* Keep the sunrise behind every app route instead of reverting to blue canvases. */
+#app,.wrap,#a4mount,#socialMount,#v2mount,.angel-portal,.angel-portal-section{
+  background:transparent!important;
+}
+#app{position:relative;z-index:1;min-height:100svh}
+.angel-legal{position:relative;z-index:2}
+html.angel-sunrise-ready body{background:transparent!important}
+html.angel-sunrise-ready .wrap>.hero:first-of-type,
+html.angel-sunrise-ready .hero{
+  background:transparent!important;
+  background-color:transparent!important;
+}
+html.angel-sunrise-ready .hero::before,
+html.angel-sunrise-ready .wrap>.hero:first-of-type::before{opacity:0!important}
+
+/* The photo stays visible through the new design; content becomes readable glass. */
+.angel-portal-tile,.angel-agent-card,.card,.a4card,.twcard,.twwallpost,.learn-card,.fcbar,
+.angel-choice,.st-sheet,.angel-agent-panel{
+  background:var(--sunrise-glass)!important;
+  border-color:var(--sunrise-line)!important;
+  box-shadow:var(--sunrise-shadow)!important;
+  backdrop-filter:blur(15px) saturate(1.08)!important;
+  -webkit-backdrop-filter:blur(15px) saturate(1.08)!important;
+}
+.angel-portal-visual{
+  background:rgba(255,255,255,.42)!important;
+  border-bottom-color:rgba(255,255,255,.42)!important;
+}
+.angel-agent-art{
+  background:linear-gradient(145deg,rgba(255,244,214,.58),rgba(222,239,249,.48))!important;
+}
+.angel-agent-messages{background:rgba(255,255,255,.56)!important}
+.filters{background:transparent!important}
+.filters button{
+  background:rgba(255,255,255,.78)!important;
+  border-color:rgba(255,255,255,.55)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+.filters button[aria-pressed="true"]{background:rgba(16,42,76,.90)!important;color:#fff!important}
+.angel-portal-title{
+  color:#102A4C!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.72),0 2px 12px rgba(255,255,255,.45)!important;
+}
+.angel-portal-link{background:rgba(255,255,255,.62)!important;border-radius:999px;padding:7px 11px!important;backdrop-filter:blur(9px)}
+
+/* The opening text remains directly on the sunrise. */
+.wrap>.hero:first-of-type{box-shadow:none!important}
+.wrap>.hero:first-of-type::after{
+  background:linear-gradient(180deg,rgba(7,21,39,.01) 0%,rgba(7,21,39,.02) 44%,rgba(7,21,39,.16) 69%,rgba(7,21,39,.46) 100%)!important;
+}
+.wrap>.hero:first-of-type h2,
+.wrap>.hero:first-of-type .angel-vision,
+.wrap>.hero:first-of-type .angel-mode-note,
+.wrap>.hero:first-of-type .note{position:relative;z-index:4}
+
+/* Bottom navigation is glass, not a solid blue/white slab. */
+nav{
+  background:rgba(255,255,255,.78)!important;
+  border-top:1px solid rgba(255,255,255,.54)!important;
+  box-shadow:0 -8px 24px rgba(32,57,84,.10)!important;
+  backdrop-filter:blur(18px) saturate(1.12)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.12)!important;
+}
+.angel-legal{
+  background:rgba(255,255,255,.58)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+
+/* Solid blue remains only where it has a functional role: primary buttons and call-to-action. */
+.a4btn.dark,.twbtn.dark,.angel-agent-open,.angel-agent-send,.cta{
+  background:#12477E!important;
+  color:#fff!important;
+}
+
+@media(max-width:720px){
+  .angel-sunrise-slide{inset:-1.5%}
+  .angel-portal{background:transparent!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .angel-sunrise-slide{transition:none!important;transform:none!important}
+}
