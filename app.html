@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Heal — התמודדות יחד</title>
-<meta name="description" content="קו הקשבה 24/7. אנשים שעברו את זה, זמינים לדבר איתך עכשיו." />
+<meta name="description" content="heal — קהילה תומכת שמחברת בין אנשים ובין מי שזקוק לטיפול למטפלים מאומתים." />
 <meta name="theme-color" content="#28315E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -277,14 +277,13 @@ var TOPIC_FILTERS = {
 };
 
 var TICKER = [
-  "מישהו בקהילה שם קומקום. יש זמן לדבר.",
-  'אף אחד כאן לא יגיד לך "תנסה לחשוב חיובי".',
-  "כנפיים אין לנו. סבלנות — בשפע.",
-  'אפשר גם רק להגיד "היי" ולשתוק ביחד.',
-  "יש עוד אנשים בקהילה שלא מצליחים להירדם עכשיו."
+  "יש כאן אנשים שמבינים איך זה מרגיש.",
+  "לא חייבים להתמודד לבד.",
+  "אפשר להתחיל רק ב״היי״.",
+  "לפעמים שיחה אחת היא הצעד הראשון קדימה."
 ];
 
-var WAIT = ["מחפשים מישהו שיכול להקשיב…","מחפשים מישהו שכבר היה בדיוק שם…","עוד רגע. הם בדרך, בלי טיסה ישירה."];
+var WAIT = ["מחפשים מישהו שיכול להיות איתך עכשיו…","מחברים אותך לאדם מתאים…","עוד רגע, אנחנו כאן איתך."];
 
 var HOTLINES = [
   {name:'ער"ן — עזרה ראשונה נפשית',detail:"24/7, אנונימי",num:"1201"},
@@ -394,7 +393,7 @@ function homeScreen(){
     return '<button data-act="filter" data-id="'+x.id+'" aria-pressed="'+(S.filter===x.id)+'">'+x.label+'</button>';
   }).join("");
   return '<header class="top"><div>'+
-      '<h1 class="display" style="font-size:26px">אנג\'ל</h1>'+
+      '<h1 class="display" style="font-size:26px">heal</h1>'+
       '<p class="small muted" style="margin:0">קהילה תומכת לכל מי שצריך את זה</p></div>'+
       '<button class="sos press" data-act="sheet" data-id="emergency">'+ic('buoy',16)+'עזרה דחופה</button>'+
     '</header>'+
@@ -404,7 +403,7 @@ function homeScreen(){
       list.filter(function(p){return p.online;}).length+' דלוקים עכשיו</p>'+
     list.map(angelCard).join("")+
     learnSection()+
-    '<p class="disclaimer">אנג\'ל הוא מרחב הקשבה בין אנשים. הוא לא טיפול ולא תחליף לקו חירום.</p>';
+    '<p class="disclaimer">heal הוא מרחב הקשבה בין אנשים. הוא לא טיפול ולא תחליף לקו חירום.</p>';
 }
 
 function chatsScreen(){
