@@ -15,7 +15,7 @@ function ensureHero(){
     lock.innerHTML='<img src="heal-icon.svg?v=20261007-heal2" alt="" aria-hidden="true"><span class="heal-lockup-copy"><span class="heal-word">heal</span><span class="heal-mini">התמודדות יחד</span></span>';
     hero.insertBefore(lock,hero.firstChild);
   }
-  var h=hero.querySelector('h2');if(h&&h.textContent.trim().indexOf('התמודדות יחד')<0)h.innerHTML='מתמודדים יחד.<br>חוזרים לחיים.';
+  var h=hero.querySelector('h2');if(h&&h.textContent.trim().indexOf('התמודדות יחד')<0)h.textContent='התמודדות יחד.';
   var vision=hero.querySelector('.angel-vision');if(vision){vision.classList.add('heal-mission');vision.textContent=MISSION}
   var count=hero.querySelector('.count');if(count){
     var b=count.querySelector('b'),num=b?b.textContent.trim():'';
