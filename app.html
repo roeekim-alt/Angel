@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>אנג'ל — המלאך השומר שלך</title>
+<title>Heal — התמודדות יחד</title>
 <meta name="description" content="קו הקשבה 24/7. אנשים שעברו את זה, זמינים לדבר איתך עכשיו." />
 <meta name="theme-color" content="#28315E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Suez+One&display=swap" rel="stylesheet">
 <style>
 /* ------------------------------------------------------------------
-   אנג'ל — המלאך השומר שלך
+   Heal — התמודדות יחד
    Single-file prototype. No build tools, no frameworks.
 
    HUMOR POLICY (deliberate, not decorative):
@@ -261,7 +261,7 @@ var ANGELS = [
 ];
 
 var FILTERS = [
-  {id:"all",label:"כל המלאכים"},{id:"oct",label:"7.10 ומילואים"},{id:"ptsd",label:"פוסט טראומה"},
+  {id:"all",label:"כל הקהילה"},{id:"oct",label:"7.10 ומילואים"},{id:"ptsd",label:"פוסט טראומה"},
   {id:"combat",label:"הלם קרב"},{id:"loneliness",label:"בדידות"},{id:"addiction",label:"התמכרות"},
   {id:"sexual",label:"פגיעה מינית"},{id:"domestic",label:"אלימות בתוך המשפחה"},
   {id:"nefesh",label:"מתמודדי נפש"},{id:"fizi",label:"פציעה ושיקום"},{id:"ovdan",label:"אובדן ואבל"},{id:"pro",label:"אנשי מקצוע"}
@@ -277,14 +277,14 @@ var TOPIC_FILTERS = {
 };
 
 var TICKER = [
-  "מלאך מספר 12 שם קומקום. יש זמן לדבר.",
+  "מישהו בקהילה שם קומקום. יש זמן לדבר.",
   'אף אחד כאן לא יגיד לך "תנסה לחשוב חיובי".',
   "כנפיים אין לנו. סבלנות — בשפע.",
   'אפשר גם רק להגיד "היי" ולשתוק ביחד.',
-  "שלושה מלאכים בדיוק לא מצליחים להירדם גם הם."
+  "יש עוד אנשים בקהילה שלא מצליחים להירדם עכשיו."
 ];
 
-var WAIT = ["מעירים מלאך…","מחפשים מישהו שכבר היה בדיוק שם…","עוד רגע. הם בדרך, בלי טיסה ישירה."];
+var WAIT = ["מחפשים מישהו שיכול להקשיב…","מחפשים מישהו שכבר היה בדיוק שם…","עוד רגע. הם בדרך, בלי טיסה ישירה."];
 
 var HOTLINES = [
   {name:'ער"ן — עזרה ראשונה נפשית',detail:"24/7, אנונימי",num:"1201"},
@@ -343,7 +343,7 @@ function angelCard(p){
     '</button>'+
     '<div class="actions">'+
       '<button class="btn-dark press" data-act="call" data-id="'+p.id+'"'+(p.online?'':' disabled')+'>'+
-        ic('phone',17)+(p.online?"בצלצול קפיצה":"ההילה כבויה")+'</button>'+
+        ic('phone',17)+(p.online?"בצלצול קפיצה":"לא זמין\/ה כרגע")+'</button>'+
       '<button class="btn-icon press" data-act="call" data-id="'+p.id+'"'+(p.online?'':' disabled')+
         ' aria-label="הודעה ל'+esc(p.name)+'">'+ic('msg',19)+'</button>'+
     '</div></article>';
@@ -355,10 +355,10 @@ function hero(){
   for (var i=0;i<24;i++) h += '<i class="'+(i<Math.min(online,24)?'lit':'')+'" style="animation-delay:'+((i%6)*0.5)+'s"></i>';
   return '<section class="hero">'+
     '<div class="halos" aria-hidden="true">'+h+'</div>'+
-    '<p class="count"><b>'+online+'</b> מלאכים עם ההילה דלוקה עכשיו</p>'+
-    '<h2 class="display">כנפיים אין לנו.<br>יש לנו זמן.</h2>'+
+    '<p class="count"><b>'+online+'</b> אנשים מחוברים עכשיו</p>'+
+    '<h2 class="display">התמודדות יחד.<br>לא עוברים את זה לבד.</h2>'+
     '<p id="ticker">'+esc(TICKER[S.tick])+'</p>'+
-    '<button class="cta press" data-act="hero">'+ic('phone',20)+'שלחו לי מלאך</button>'+
+    '<button class="cta press" data-act="hero">'+ic('phone',20)+'חברו אותי למישהו</button>'+
     '<p class="note">אנונימי · בלי הרשמה · בלי שאלות מיותרות</p>'+
   '</section>';
 }
@@ -395,7 +395,7 @@ function homeScreen(){
   }).join("");
   return '<header class="top"><div>'+
       '<h1 class="display" style="font-size:26px">אנג\'ל</h1>'+
-      '<p class="small muted" style="margin:0">המלאך השומר שלך</p></div>'+
+      '<p class="small muted" style="margin:0">קהילה תומכת לכל מי שצריך את זה</p></div>'+
       '<button class="sos press" data-act="sheet" data-id="emergency">'+ic('buoy',16)+'עזרה דחופה</button>'+
     '</header>'+
     hero()+
@@ -434,13 +434,13 @@ function meScreen(){
     '<div class="card">'+
       '<div class="row" style="gap:16px;margin-bottom:16px">'+avatar(me)+
         '<div><div style="font-weight:700">עומר</div>'+
-        '<div class="small muted">מלאך מוסמך · 12 שיחות החודש</div></div></div>'+
+        '<div class="small muted">חבר\/ת קהילה · 12 שיחות החודש</div></div></div>'+
       '<button class="toggle soft" data-act="toggle" aria-pressed="'+S.available+'">'+
         '<span><span style="font-weight:700;font-size:15px;color:'+
           (S.available?'var(--halo-deep)':'var(--ink-soft)')+'">'+
-          (S.available?"ההילה שלי דלוקה":"ההילה כבויה")+'</span>'+
+          (S.available?"אני זמין\/ה":"לא זמין\/ה כרגע")+'</span>'+
         '<span class="xs muted" style="display:block">'+
-          (S.available?"אפשר להעביר אליי שיחות":"לא מקבל/ת שיחות כרגע. גם למלאכים מגיעה הפסקה")+'</span></span>'+
+          (S.available?"אפשר לפנות אליי":"לא מקבל\/ת שיחות כרגע")+'</span></span>'+
         '<span class="switch"><b></b></span></button>'+
     '</div>'+tiles;
 }
@@ -498,7 +498,7 @@ function sheetProfile(){
       'עבר/ה ראיון, מיון מקצועי והכשרת הקשבה</div>'+
     '<button class="big '+(p.online?'gold':'')+' press" data-act="call" data-id="'+p.id+'"'+
       (p.online?'':' disabled')+'>'+ic('phone',19)+
-      (p.online?'בצלצול קפיצה':'ההילה כבויה כרגע')+'</button>';
+      (p.online?'בצלצול קפיצה':'לא זמין\/ה כרגע')+'</button>';
 }
 
 
@@ -552,7 +552,7 @@ function sheetAfter(){
     return '<div style="text-align:center;padding:8px 0">'+
       '<div style="width:52px;height:52px;border-radius:999px;background:#E4F6EF;color:var(--grass);'+
         'display:grid;place-items:center;margin:0 auto 12px">'+ic('check',26)+'</div>'+
-      '<h3 class="display">תודה. ההילה נשארת דלוקה.</h3>'+
+      '<h3 class="display">תודה. אנחנו כאן יחד.</h3>'+
       '<p class="small muted" style="margin:4px 0 16px">אפשר לחזור לכאן בכל שעה, גם ב-4 לפנות בוקר.</p>'+
       '<button class="big dark press" data-act="close">סגירה</button></div>';
   }
