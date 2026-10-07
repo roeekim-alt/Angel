@@ -30,7 +30,7 @@ function addCss(){
 function ensureHero(){
   var hero=q('.wrap>.hero:first-of-type')||q('main.wrap .hero');if(!hero)return;
   var lock=q('#healBrandLockup');
-  if(!lock){lock=document.createElement('div');lock.id='healBrandLockup';lock.className='heal-brand-lockup';lock.setAttribute('aria-label','Heal — התמודדות יחד');lock.innerHTML=hillMark()+'<span class="heal-brand-name">Heal</span>';hero.insertBefore(lock,hero.firstChild)}
+  if(!lock){lock=document.createElement('div');lock.id='healBrandLockup';lock.className='heal-brand-lockup';lock.setAttribute('aria-label','heal — התמודדות יחד');lock.innerHTML=hillMark()+'<span class="heal-brand-name">heal</span>';hero.insertBefore(lock,hero.firstChild)}
   var h=hero.querySelector('h2');if(h&&h.textContent.trim().indexOf('התמודדות יחד')<0){h.innerHTML='התמודדות יחד.'}
   var vision=hero.querySelector('.angel-vision');
   if(vision){vision.classList.add('heal-mission');vision.textContent=MISSION}
@@ -44,9 +44,9 @@ function replaceVisible(root){
   nodes.forEach(function(t){
     var p=t.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT|OPTION)$/.test(p.tagName))return;
     var x=t.nodeValue, y=x;
-    y=y.replace(/אנג[׳']ל/g,'Heal');
-    y=y.replace(/Angel האישי/g,'Heal האישי');
-    y=y.replace(/Angel אישי/g,'Heal אישי');
+    y=y.replace(/heal/g,'Heal');
+    y=y.replace(/heal אישי/g,'Heal האישי');
+    y=y.replace(/heal אישי/g,'Heal אישי');
     y=y.replace(/מלאכים מחוברים עכשיו/g,'אנשים מחוברים עכשיו');
     y=y.replace(/כל המלאכים/g,'כל הקהילה');
     y=y.replace(/שלחו לי מלאך/g,'חברו אותי למישהו');
@@ -54,12 +54,12 @@ function replaceVisible(root){
     if(y!==x)t.nodeValue=y;
   });
   root.querySelectorAll&&root.querySelectorAll('[aria-label]').forEach(function(el){
-    var a=el.getAttribute('aria-label')||'',b=a.replace(/אנג[׳']ל/g,'Heal').replace(/Angel האישי/g,'Heal האישי').replace(/Angel אישי/g,'Heal אישי');if(a!==b)el.setAttribute('aria-label',b)
+    var a=el.getAttribute('aria-label')||'',b=a.replace(/heal/g,'Heal').replace(/heal אישי/g,'Heal האישי').replace(/heal אישי/g,'Heal אישי');if(a!==b)el.setAttribute('aria-label',b)
   })
 }
 function metadata(){
-  document.title='Heal — התמודדות יחד';
-  var m=q('meta[name="description"]');if(m)m.setAttribute('content','Heal — התמודדות יחד. קהילה תומכת שמחברת בין אנשים ובין מטפלים למי שזקוקים לטיפול, כדי לעזור לאנשים במצוקה למצוא שוב קשר, תקווה ואיכות חיים טובה יותר.')
+  document.title='heal — התמודדות יחד';
+  var m=q('meta[name="description"]');if(m)m.setAttribute('content','heal — התמודדות יחד. קהילה תומכת שמחברת בין אנשים ובין מטפלים למי שזקוקים לטיפול, כדי לעזור לאנשים במצוקה למצוא שוב קשר, תקווה ואיכות חיים טובה יותר.')
 }
 function sync(root){addCss();metadata();replaceVisible(root||document.body);ensureHero()}
 function boot(){
