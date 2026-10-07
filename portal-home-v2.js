@@ -6,18 +6,18 @@ function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'
 function shared(){var c=window.ANGEL_SUPABASE;if(!c||!window.supabase)return null;return window.AngelSupabaseClient||(window.AngelSupabaseClient=window.supabase.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}))}
 async function loadProfile(){if(!sb||!session){profile=null;return}var r=await sb.from('profiles').select('id,display_name,bio,topics,is_anonymous').eq('id',session.user.id).maybeSingle();profile=r.data||null}
 function greeting(){var n=profile&&!profile.is_anonymous&&profile.display_name?profile.display_name.split(/\s+/)[0]:'';return n?'המרחב של '+esc(n):'המרחב שלך'}
-function portalHTML(){return '<section id="angelPortal" class="angel-portal" aria-label="המרחב האישי של Heal">'+
+function portalHTML(){return '<section id="angelPortal" class="angel-portal" aria-label="המרחב האישי של heal">'+
   '<section class="angel-portal-section"><div class="angel-portal-head"><div class="angel-portal-title-wrap"><h2 class="angel-portal-title">'+greeting()+'</h2><span class="angel-portal-line"></span></div><button class="angel-portal-link" data-portal-go="community">לכל הקהילה ‹</button></div>'+
   '<div class="angel-portal-strip">'+
-    tile('agent','✨','Heal אישי','צ׳אט תמיכה אישי שמותאם למה שבחרת לשתף.')+
+    tile('agent','✨','heal אישי','צ׳אט תמיכה אישי שמותאם למה שבחרת לשתף.')+
     tile('breathe','〰️','נשימה והרגעה','כלים קצרים לרגעים של הצפה או לחץ.')+
     tile('journal','📝','יומן','לכתוב מחשבות, לעקוב ולתת מקום למה שעובר עליך.')+
     tile('community','🫶','קהילה','אנשים אמיתיים שמקשיבים, משתפים ומבינים.')+
     tile('therapists','⚕️','מטפלים','פרופילים מאומתים של אנשי מקצוע בקהילה.')+
     tile('tools','📖','ידע וכלים','תוכן וכלים מעשיים להתמודדות יומיומית.')+
   '</div></section>'+
-  '<section class="angel-portal-section"><div class="angel-portal-head"><div class="angel-portal-title-wrap"><h2 class="angel-portal-title">Heal האישי שלי</h2><span class="angel-portal-line"></span></div></div>'+
-    '<article class="angel-agent-card"><div class="angel-agent-card-copy"><div class="angel-agent-kicker">מרחב תמיכה אישי</div><h3>מקום קבוע לדבר בו</h3><p>Heal האישי משתמש בפרופיל ובהעדפות שבחרת לשתף כדי לתת שיחה עקבית ועדינה יותר. הוא לא מחליף מטפל, אבחון או שירות חירום.</p><button class="angel-agent-open" data-portal-go="agent">פתחו את Heal האישי</button></div><div class="angel-agent-art" aria-hidden="true"><span>⛰️</span></div></article>'+
+  '<section class="angel-portal-section"><div class="angel-portal-head"><div class="angel-portal-title-wrap"><h2 class="angel-portal-title">heal האישי שלי</h2><span class="angel-portal-line"></span></div></div>'+
+    '<article class="angel-agent-card"><div class="angel-agent-card-copy"><div class="angel-agent-kicker">מרחב תמיכה אישי</div><h3>מקום קבוע לדבר בו</h3><p>heal האישי משתמש בפרופיל ובהעדפות שבחרת לשתף כדי לתת שיחה עקבית ועדינה יותר. הוא לא מחליף מטפל, אבחון או שירות חירום.</p><button class="angel-agent-open" data-portal-go="agent">פתחו את heal האישי</button></div><div class="angel-agent-art" aria-hidden="true"><span>⌁</span></div></article>'+
   '</section></section>'}
 function tile(id,icon,title,desc){return '<button class="angel-portal-tile" data-portal-go="'+id+'"><span class="angel-portal-visual" aria-hidden="true">'+icon+'</span><span class="angel-portal-copy"><b>'+title+'</b><span>'+desc+'</span></span></button>'}
 function inject(){var hero=q('main.wrap .hero')||q('.wrap > .hero:first-of-type');if(!hero||q('#angelPortal'))return;var box=document.createElement('div');box.innerHTML=portalHTML();hero.insertAdjacentElement('afterend',box.firstElementChild)}
