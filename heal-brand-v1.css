@@ -1,0 +1,52 @@
+/* heal brand layer — hill / healing */
+:root{
+  --heal-forest:#236F5B;
+  --heal-forest-deep:#174D40;
+  --heal-mint:#EAF5EF;
+  --heal-sun:#F5C766;
+}
+.heal-lockup{
+  position:absolute!important;
+  top:calc(12px + env(safe-area-inset-top))!important;
+  left:16px!important;
+  z-index:225!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  min-height:46px!important;
+  padding:6px 11px 6px 7px!important;
+  border-radius:16px!important;
+  background:rgba(255,255,255,.88)!important;
+  border:1px solid rgba(255,255,255,.94)!important;
+  box-shadow:0 8px 24px rgba(22,65,53,.14)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+  color:var(--heal-forest-deep)!important;
+}
+.heal-lockup img{width:34px!important;height:34px!important;border-radius:10px!important;display:block!important}
+.heal-lockup-copy{display:flex;flex-direction:column;align-items:flex-start;line-height:1!important}
+.heal-word{font-family:Assistant,system-ui,sans-serif;font-size:23px;font-weight:900;letter-spacing:-.04em;text-transform:lowercase}
+.heal-mini{font-size:9px;font-weight:800;letter-spacing:.01em;color:#55746A;margin-top:4px;white-space:nowrap}
+.wrap>.hero:first-of-type h2::after{
+  content:"התמודדות יחד. קהילה תומכת לכל מי שצריך את זה."!important;
+  color:#FFF0B8!important;
+  font-size:16px!important;
+  line-height:1.4!important;
+  max-width:390px!important;
+}
+.wrap>.hero:first-of-type .angel-vision{
+  max-width:410px!important;
+  font-size:15px!important;
+  line-height:1.58!important;
+}
+.angel-portal-line{background:var(--heal-forest)!important}
+.angel-agent-open,.angel-agent-send,.a4btn.dark,.twbtn.dark,.cta{background:var(--heal-forest)!important}
+.angel-agent-mark{background:linear-gradient(145deg,var(--heal-forest),#4C9A82)!important}
+.angel-agent-fab{background:linear-gradient(105deg,var(--heal-forest),#3F8C75)!important}
+nav button[aria-current="true"],nav button.a4current{color:var(--heal-forest)!important}
+@media(max-width:390px){
+  .heal-lockup{left:10px!important;padding-right:9px!important}
+  .heal-lockup img{width:31px!important;height:31px!important}
+  .heal-word{font-size:21px}
+  .heal-mini{display:none}
+}
