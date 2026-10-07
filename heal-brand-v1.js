@@ -46,7 +46,7 @@ function replaceVisible(root){
   });
 }
 function metadata(){
-  document.title='heal — מתמודדים יחד';
+  document.title='heal — התמודדות יחד';
   var m=q('meta[name="description"]');
   if(m)m.setAttribute('content','heal — התמודדות יחד. קהילה תומכת שמחברת בין אנשים ובין מטפלים למי שזקוקים לטיפול, כדי לעזור לאנשים במצוקה למצוא שוב קשר, תקווה ואיכות חיים טובה יותר.');
 }
